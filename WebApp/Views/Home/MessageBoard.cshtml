@@ -1,0 +1,40 @@
+﻿@model List<WebApp.Models.Message>
+@section Styles {
+    <link rel="stylesheet" href="~/css/MessageBoard.css" />
+}
+
+@{
+    ViewData["Title"] = "Message Board";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="MessageBoard" method="post">
+    <div>
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="name" required />
+    </div>
+    <div>
+        <label for="Content">Message:</label>
+        <textarea id="Content" name="content" required></textarea>
+    </div>
+    <button type="submit">Post</button>
+</form>
+
+<h2>留言</h2>
+@if (Model != null && Model.Count > 0)
+{
+	<ul>
+		@foreach (var message in Model)
+		{
+			<li class="message">
+				<strong>@message.Name</strong>: @message.Timestamp.ToString("yyyy/MM/dd HH:mm:ss")<br />
+                <p>@message.Content</p>
+			</li>
+		}
+	</ul>
+}
+else
+{
+	<p>目前沒有留言。</p>
+}

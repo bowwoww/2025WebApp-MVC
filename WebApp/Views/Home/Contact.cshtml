@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<h1>Contact Us</h1>
+
+@if (ViewData["Message"] != null)
+{
+	<div class="alert alert-info">
+		@ViewData["Message"]
+	</div>
+}
+
+<form asp-action="Contact" method="post">
+    <div>
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" required />
+    </div>
+    <div>
+        <label for="Email">Email:</label>
+        <input type="email" id="Email" name="Email" required />
+    </div>
+    <div>
+        <label for="Message">Message:</label>
+        <textarea id="Message" name="Message" required></textarea>
+    </div>
+    <button type="submit">Submit</button>
+</form>
