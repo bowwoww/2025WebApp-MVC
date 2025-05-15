@@ -4,6 +4,19 @@ namespace Program_C.Controllers
 {
     public class FileUploadController : Controller
     {
+        private string photoFolder = "photos";
+        public IActionResult ShowPhotos()
+        {
+            string[] files = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photoFolder));
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                ViewData["Photos"] += $"<img src='/{photoFolder}/{fileName}' width='100' height='100' />";
+            }
+
+            return View();
+        }
+
         public IActionResult Create()
         {
             return View();
@@ -23,7 +36,7 @@ namespace Program_C.Controllers
                 return View();
             }
             string fileName = Path.GetFileName(photo.FileName);
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", fileName);
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photoFolder, fileName);
 
             //FileStream fileStream = new FileStream(filePath, FileMode.Create);
             //photo.CopyTo(fileStream);
