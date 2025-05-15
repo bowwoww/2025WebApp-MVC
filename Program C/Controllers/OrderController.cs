@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Program_C.Models;
 
 namespace Program_C.Controllers
 {
@@ -15,6 +16,20 @@ namespace Program_C.Controllers
             ViewData["inputName"] = inputName;
             ViewData["inputPrice"] = inputPrice;
 
+            return View();
+        }
+
+        public IActionResult Create2()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create2(Product product)
+        {
+            ViewData["inputID"] = product.ID;
+            ViewData["inputName"] = product.Name;
+            ViewData["inputPrice"] = product.Price;
             return View();
         }
     }
