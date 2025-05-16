@@ -44,6 +44,6 @@
 </div>
 <div>
     @Html.ActionLink("Edit", "Edit", new { Id = Model.Id }) |
-    @Html.ActionLink("Delete", "Delete", new { Id = Model.Id }) |
+    @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { onclick = "return confirm('確定要刪除這筆資料嗎？');" })
     <a asp-action="Index">Back to List</a>
 </div>

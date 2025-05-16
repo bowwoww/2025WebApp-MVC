@@ -21,6 +21,11 @@ namespace Program_C.Controllers
         [HttpPost]
         public IActionResult Create(Member member)
         {
+            if(_members.Any(m => m.Id == member.Id))
+            {
+                ModelState.AddModelError("Id", "ID already exists.");
+                return View(member);
+            }
             _members.Add(member);
             return RedirectToAction("Index");
         }
@@ -60,6 +65,17 @@ namespace Program_C.Controllers
                 return NotFound();
             }
             return View(member);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var member = _members.FirstOrDefault(m => m.Id == id);
+            if (member == null)
+            {
+                return NotFound();
+            }
+            _members.Remove(member);
+            return RedirectToAction("Index");
         }
     }
 }

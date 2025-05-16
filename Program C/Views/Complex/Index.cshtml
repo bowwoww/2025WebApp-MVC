@@ -8,25 +8,37 @@
 
 <div>
     <h4>Member</h4>
-	@if (Model != null && Model.Count > 0)
-	{
-		<ul>
-			@foreach (var item in Model)
-			{
-				<li>
-					@Html.ActionLink(item.Name,"Detail", new {Id = item.Id} )
-				</li>
-			}
-		</ul>
-	}
-	else
-	{
-		<p>目前沒有會員資料。</p>
-	}
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.ActionLink(item.Name, "Detail", new { Id = item.Id })</td>
+                        <td>    
+                            @Html.ActionLink("編輯", "Edit", new { Id = item.Id })
+                            |
+                            @Html.ActionLink("刪除", "Delete", new { Id = item.Id }, new { onclick = "return confirm('Are you sure to delete it?');" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>目前沒有會員資料。</p>
+    }
     <hr />
-
 </div>
 <div>
-	<a asp-action="Index">Back to List</a> |
-	<a asp-action="Create">Create New</a>
+    <a asp-action="Index">Back to List</a> |
+    <a asp-action="Create">Create New</a>
 </div>
