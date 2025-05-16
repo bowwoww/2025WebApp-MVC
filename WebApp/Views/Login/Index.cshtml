@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+
+	var username = Context.Session.GetString("Username");
+}
+
+<h1>Index</h1>
+
+@if (username != null)
+{
+	<div class="alert alert-success">
+		Welcome back, @username!
+	</div>
+	<a asp-cotroller="Login" asp-action="Logout">Logout</a>
+}
+else
+{
+	<div class="alert alert-warning">
+		You are not logged in.
+	</div>
+	<p>Please <a asp-controller="Login" asp-action="Login">login</a> to continue.</p>
+
+}

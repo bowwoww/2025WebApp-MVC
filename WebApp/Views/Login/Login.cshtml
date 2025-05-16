@@ -1,0 +1,32 @@
+﻿@{
+	ViewData["Title"] = "Login";
+	var username = ViewData["cookieUsername"] as string;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger">
+		@ViewData["ErrorMessage"]
+	</div>
+}
+
+<form asp-action="Login" method="post">
+	<div class="form-control">
+		<label for="Username">Username : </label>
+		<input type="text" name="Username" id="Username" value="@username" required />
+	</div>
+	<div class="form-control">
+		<label for="Password">Password : </label>
+		<input type="password" name="Password" id="Password" required />
+	</div>
+	<div class="form-control">
+		<label for="RememberMe">Remember Me : </label>
+		<input type="checkbox" name="RememberMe" id="RememberMe" value="true" @(username != null ? "checked" : "") />
+	</div>
+	<div class="form-control">
+		<button type="submit">Login</button>
+	</div>
+
+</form>
