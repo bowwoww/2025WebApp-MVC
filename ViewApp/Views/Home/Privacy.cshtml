@@ -3,4 +3,25 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@{
+	var privacyPolicy = new List<string>
+	{
+		"1. Introduction",
+		"2. Information We Collect",
+		"3. How We Use Your Information",
+		"4. Sharing Your Information",
+		"5. Security of Your Information",
+		"6. Your Rights",
+		"7. Changes to This Privacy Policy",
+		"8. Contact Us"
+	};
+}
+
+<ul class="list-group">
+@foreach (string rule in privacyPolicy)
+{
+	<li class="list-group-item list-group-item-action">
+		<h2 class="text-danger">@rule</h2>
+	</li>
+}
+</ul>

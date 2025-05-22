@@ -1,0 +1,23 @@
+﻿@model ViewApp.Models.NightMarket[]
+@{
+    ViewData["Title"] = "IndexRWD";
+}
+
+<h1>IndexRWD</h1>
+<a class="btn btn-primary" asp-action="Login" asp-controller="Login">登入後台</a>
+
+<div class="container">
+    <div class="row">
+        @foreach(var item in Model)
+        {
+
+            <div class="col-xl-4 col-md-6 col-12">
+                <div class="card shadow p-2">
+                    <img src="/images/@(item.Id).jpg" class="img-thumbnail" />
+                    <div class="card-text fw-bold">@item.Name</div>
+                    <a href="https://www.google.com.tw/maps/search/@(item.Address)" target="_blank" class="link-danger">@item.Address</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
