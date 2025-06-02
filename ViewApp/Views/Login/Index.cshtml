@@ -45,7 +45,7 @@
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }, new {@class="btn btn-warning"})
                 @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) | *@
-                <a class="btn btn-info" asp-action="Details">Details</a>
+                <a class="btn btn-info" asp-action="Detail" asp-route-id="@item.Id">Details</a>
                 @* @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) *@
                     <a class="btn btn-danger" href="/Home/Delete" onclick="return confirm('Are you sure to delete it?');">Delete</a>
             </td>

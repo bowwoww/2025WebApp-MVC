@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ViewApp.Models;
+using System.Linq;
 
 namespace ViewApp.Controllers
 {
@@ -34,30 +35,71 @@ namespace ViewApp.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
 
+        public List<NightMarket> GetList()
+        {
             //採用List模式可以隨時增加或刪除
             List<NightMarket> list = new List<NightMarket>();
-
-
             for (int i = 0; i < id.Length; i++)
             {
-                //list模式
                 NightMarket nm = new NightMarket();
                 nm.Id = id[i];
                 nm.Name = name[i];
                 nm.Address = address[i];
                 list.Add(nm);
-
-
             }
+            return list;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+
+
+            var list = GetList();
 
 
             return View(list);
 
 
         }
+
+        [HttpGet]
+        public IActionResult Detail(string id)
+        {
+            var list = GetList();
+            var item = (from n in list
+                        where n.Id == id && n.Name.Contains("夜市")
+                        select n).FirstOrDefault();
+
+            //var item = list.FirstOrDefault(n => n.Id == id);
+            //LINQ查詢語法
+            //var item = list.Where(n => n.Id == id).OrderBy(list => list.Id).FirstOrDefault();
+
+            if (item == null)
+            {
+                //找不到資料時導回至首頁
+                return RedirectToAction("Index");
+            }
+            return View(item);
+        }
+
+        public IActionResult ListIndex(string id)
+        {
+            var list = GetList();
+            var item = list.FirstOrDefault(n => n.Id == id);
+            if (item == null)
+            {
+                //找不到資料時導回至首頁
+                return RedirectToAction("Index");
+            }
+            var vm = new VMNightMarket
+            {
+                NightMarkets = list,
+                SelectedNightMarket = item
+            };
+            return View(vm);
+        }
+
     }
 }

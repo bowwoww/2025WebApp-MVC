@@ -1,0 +1,30 @@
+﻿@model ViewApp.Models.VMNightMarket
+
+@{
+    ViewData["Title"] = "ListIndex";
+}
+
+<h1>ListIndex</h1>
+<div class="row">
+    <div class="col-3 col-lg-2 list-group">
+        @foreach(var item in Model.NightMarkets)
+        {
+            <a class="list-group-item-action list-group-item" asp-action="ListIndex" asp-route-id="@item.Id">@item.Name</a>
+        }
+    </div>
+
+	<div class="col-9 col-lg-10" id="showPage">
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="/images/@(Model.SelectedNightMarket.Id).jpg" class="img-fluid" />
+            </div>
+            <div class="col-sm-8 row">
+                <div class="fw-bold fs-3 col-sm-12">編號: @Model.SelectedNightMarket.Id</div>
+                <div class="fw-bold fs-3 col-sm-12">名稱: @Model.SelectedNightMarket.Name</div>
+                <div class="fw-bold fs-3 col-sm-12 d-none d-lg-block">
+                    地址: <a href="https://www.google.com.tw/maps/search/@(Model.SelectedNightMarket.Address)" target="_blank" class="link-danger">@Model.SelectedNightMarket.Address</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

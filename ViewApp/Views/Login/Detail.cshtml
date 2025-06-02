@@ -1,0 +1,28 @@
+﻿@model ViewApp.Models.NightMarket
+
+@{
+    ViewData["Title"] = "Detail";
+}
+
+<h1>Detail</h1>
+
+<div>
+    <h4>NightMarket</h4>
+    <hr />
+    <div class="row">
+        <div class="col-sm-4">
+            <img src="/images/@(Model.Id).jpg" class="img-fluid"/>
+        </div>
+        <div class="col-sm-8 row">
+            <div class="fw-bold fs-3 col-sm-12">編號: @Model.Id</div>
+			<div class="fw-bold fs-3 col-sm-12">名稱: @Model.Name</div>
+            <div class="fw-bold fs-3 col-sm-12 d-none d-sm-block">
+                地址: <a href="https://www.google.com.tw/maps/search/@(Model.Address)" target="_blank" class="link-danger">@Model.Address</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
