@@ -43,9 +43,8 @@
                 @Html.DisplayFor(modelItem => item.fScore)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.fStuId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.fStuId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.fStuId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.fStuId" class="btn btn-warning">編輯</a> |
+                <a asp-action="Delete" asp-route-id="@item.fStuId" class="btn btn-danger">刪除</a>
             </td>
         </tr>
 }

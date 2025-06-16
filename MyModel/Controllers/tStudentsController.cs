@@ -57,10 +57,20 @@ namespace MyModel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("fStuId,fName,fEmail,fScore")] tStudent tStudent)
         {
+
+            // 檢查學號是否已存在
+            var reslut = await _context.tStudent.FirstOrDefaultAsync(m => m.fStuId == tStudent.fStuId);
+            if (reslut != null)
+            {
+                ModelState.AddModelError("fStuId", "學號已存在，請重新輸入");
+                return View(tStudent);
+            }
+
+            // 寫入前進行後端驗證
             if (ModelState.IsValid)
             {
                 _context.Add(tStudent);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); //寫入資料庫
                 return RedirectToAction(nameof(Index));
             }
             return View(tStudent);
