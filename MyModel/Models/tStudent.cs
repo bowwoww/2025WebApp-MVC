@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyModel.Models;
 
@@ -22,4 +23,10 @@ public partial class tStudent
     [Display(Name = "分數")]
     [Range(0, 100, ErrorMessage = "分數必須在0到100之間")]
     public int? fScore { get; set; }
+    [Display(Name = "科系代碼")]
+    [ForeignKey("Department")]
+    public string departID { get; set; } = null!;
+
+    //virtual 僅描述資料庫關聯關係 
+    public virtual Department? Department { get; set; }
 }

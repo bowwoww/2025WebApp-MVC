@@ -17,6 +17,8 @@ public partial class MyDbContext : DbContext
 
     public virtual DbSet<tStudent> tStudent { get; set; }
 
+    public virtual DbSet<Department> Department { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<tStudent>(entity =>

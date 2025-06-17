@@ -10,7 +10,8 @@ namespace MyModel.Controllers
 
         public IActionResult Index()
         {
-            return View(db.tStudent.ToList());
+            var students = db.tStudent.Include(s => s.Department).ToList();
+            return View(students);
         }
 
         public IActionResult Create()
@@ -62,6 +63,21 @@ namespace MyModel.Controllers
                 return RedirectToAction("Index");
             }
             return View(student);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(string id)
+        {
+            var student = db.tStudent.FirstOrDefault(s => s.fStuId == id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            db.tStudent.Remove(student);
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

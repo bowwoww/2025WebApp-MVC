@@ -13,9 +13,6 @@
     <thead>
         <tr>
             <th>
-				@Html.DisplayNameFor(model => model.fStuId)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.fName)
             </th>
             <th>
@@ -25,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.fScore)
             </th>
             <th>
-				@Html.DisplayNameFor(model => model.Department.DepartName)
+                @Html.DisplayNameFor(model => model.Department)
             </th>
             <th></th>
         </tr>
@@ -33,9 +30,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-				@Html.DisplayFor(modelItem => item.fStuId)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.fName)
             </td>
@@ -46,15 +40,12 @@
                 @Html.DisplayFor(modelItem => item.fScore)
             </td>
             <td>
-				@Html.DisplayFor(modelItem => item.Department.DepartName)
+                @Html.DisplayFor(modelItem => item.Department.DepartID)
             </td>
-            <td class="d-flex">
-                <a asp-action="Edit" asp-route-id="@item.fStuId" class="btn btn-warning">編輯</a> |
-                <form asp-action="Delete">
-						<input type="hidden" name="id" value="@item.fStuId" />
-						<button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure to delete ?')">刪除</button>
-                </form>
-                
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.fStuId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.fStuId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.fStuId">Delete</a>
             </td>
         </tr>
 }
