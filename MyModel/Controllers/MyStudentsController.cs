@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyModel.Models;
 
@@ -16,6 +17,7 @@ namespace MyModel.Controllers
 
         public IActionResult Create()
         {
+            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName");
             return View();
         }
         [HttpPost]
@@ -39,11 +41,14 @@ namespace MyModel.Controllers
 
         public IActionResult Edit(string id)
         {
+
             var student = db.tStudent.FirstOrDefault(s => s.fStuId == id);
+            
             if (student == null)
             {
                 return NotFound();
             }
+            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName");
             return View(student);
         }
 

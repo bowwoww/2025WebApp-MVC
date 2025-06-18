@@ -46,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.fScore)
             </td>
             <td>
-				@Html.DisplayFor(modelItem => item.Department.DepartName)
+					@Html.DisplayFor(modelItem => item.Department.DepartName) (@Html.DisplayFor(modelItem => item.departID))
             </td>
             <td class="d-flex">
                 <a asp-action="Edit" asp-route-id="@item.fStuId" class="btn btn-warning">編輯</a> |
