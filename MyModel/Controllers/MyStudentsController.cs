@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Specialized;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyModel.Models;
+using MyModel.ViewModel;
 
 namespace MyModel.Controllers
 {
@@ -9,15 +11,28 @@ namespace MyModel.Controllers
     {
         MyDbContext db = new MyDbContext();
 
+        public IActionResult IndexViewModel(string id="01")
+        {
+            // 使用 ViewModel 來傳遞學生資料和部門資料
+            var students = db.tStudent.Where(s => s.Department.DepartID == id).ToList();
+            var departmentList = db.Department.ToList();
+            var viewModel = new VMtStudent
+            {
+                tStudents = students,
+                departments = departmentList
+            };
+            return View(viewModel);
+        }
+
         public IActionResult Index()
         {
             var students = db.tStudent.Include(s => s.Department).ToList();
             return View(students);
         }
 
-        public IActionResult Create()
+        public IActionResult Create(string id="01")
         {
-            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName");
+            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName",id);
             return View();
         }
         [HttpPost]

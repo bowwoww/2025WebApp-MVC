@@ -1,0 +1,78 @@
+﻿@model MyModel.ViewModel.VMtStudent
+
+@{
+    ViewData["Title"] = "IndexViewModel";
+    // 取得目前的 id 參數（如果有的話）
+    var currentId = Context.Request.RouteValues["id"]?.ToString();
+}
+
+<h1>IndexViewModel</h1>
+<a id="btnCreate" class="btn btn-primary" asp-action="Create" asp-route-id="@currentId">Create New</a>
+
+<div class="row">
+    <div class="col-3">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">科系</th>
+                </tr>
+            </thead>
+        @foreach (var department in Model.departments)
+        {
+            <tbody>
+                <tr class="list-group">
+                    <td class="list-group-item">
+                        <a class="btn btn-value" asp-action="IndexViewModel" asp-route-id="@department.DepartID">@department.DepartName</a>
+                    </td>               
+                </tr>
+            </tbody>
+        }
+        </table>
+    </div> 
+    <div class="col-9">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                    @Html.DisplayNameFor(model => model.tStudents.FirstOrDefault().fStuId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.tStudents.FirstOrDefault().fName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.tStudents.FirstOrDefault().fEmail)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.tStudents.FirstOrDefault().fScore)
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.tStudents)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.fStuId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.fName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.fEmail)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.fScore)
+                        </td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.fStuId">Edit</a>
+                            <a class="btn btn-danger" href="/Home/Delete" onclick="return confirm('Are you sure to delete it?');">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+        </table>
+    </div>
+</div>
