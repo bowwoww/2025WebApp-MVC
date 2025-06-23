@@ -11,13 +11,13 @@ namespace MyModel.Controllers
 {
     public class DepartmentsController : Controller
     {
-        //private readonly MyDbContext _context;
+        private readonly MyDbContext _context;
 
-        //public DepartmentsController(MyDbContext context)
-        //{
-        //    _context = context;
-        //}
-        MyDbContext _context = new MyDbContext();
+        public DepartmentsController(MyDbContext context)
+        {
+            _context = context;
+        }
+        //MyDbContext _context = new MyDbContext();
 
         // GET: Departments
         public async Task<IActionResult> Index()

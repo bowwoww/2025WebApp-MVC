@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Create";
+    // 取得目前的 id 參數（如果有的話）
+    var currentId = Context.Request.Query["did"].ToString();
 }
 
 <h1>Create</h1>
@@ -45,7 +47,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="IndexViewModel" asp-route-did="@currentId">Back to List</a>
 </div>
 
 @section Scripts {

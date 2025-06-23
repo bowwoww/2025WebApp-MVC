@@ -1,8 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using MyModel.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
+
+// Register the DbContext with dependency injection
+builder.Services.AddDbContext<MyDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("dbStudentConnection")));
+
+/////////////////////////////
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

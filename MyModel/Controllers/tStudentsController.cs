@@ -11,14 +11,14 @@ namespace MyModel.Controllers
 {
     public class tStudentsController : Controller
     {
-        //private readonly MyDbContext _context;
+        private readonly MyDbContext _context;
 
-        //public tStudentsController(MyDbContext context)
-        //{
-        //    _context = context;
-        //}
+        public tStudentsController(MyDbContext context)
+        {
+            _context = context;
+        }
 
-        private MyDbContext _context = new MyDbContext();
+        //private MyDbContext _context = new MyDbContext();
 
         // GET: tStudents
         public async Task<IActionResult> Index()

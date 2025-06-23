@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,17 @@ namespace MyModel.Controllers
 {
     public class MyStudentsController : Controller
     {
-        MyDbContext db = new MyDbContext();
+        //MyDbContext db = new MyDbContext();
 
-        public IActionResult IndexViewModel(string id="01")
+        private readonly MyDbContext db;
+        public MyStudentsController(MyDbContext dbContext)
+        {
+            db = dbContext;
+        }
+        public IActionResult IndexViewModel(string did = "01")
         {
             // 使用 ViewModel 來傳遞學生資料和部門資料
-            var students = db.tStudent.Where(s => s.Department.DepartID == id).ToList();
+            var students = db.tStudent.Where(s => s.Department.DepartID == did).ToList();
             var departmentList = db.Department.ToList();
             var viewModel = new VMtStudent
             {
@@ -30,9 +36,9 @@ namespace MyModel.Controllers
             return View(students);
         }
 
-        public IActionResult Create(string id="01")
+        public IActionResult Create(string did = "01")
         {
-            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName",id);
+            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName", did);
             return View();
         }
         [HttpPost]
@@ -49,8 +55,9 @@ namespace MyModel.Controllers
             {
                 db.tStudent.Add(student);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("IndexViewModel", new { did = student.departID });
             }
+            ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName", student.departID);
             return View(student);
         }
 
@@ -64,6 +71,7 @@ namespace MyModel.Controllers
                 return NotFound();
             }
             ViewData["depart"] = new SelectList(db.Department, "DepartID", "DepartName");
+            ViewData["departID"] = student.departID;
             return View(student);
         }
 
@@ -80,7 +88,7 @@ namespace MyModel.Controllers
             {
                 db.tStudent.Update(student);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("IndexViewModel");
             }
             return View(student);
         }
@@ -97,7 +105,7 @@ namespace MyModel.Controllers
 
             db.tStudent.Remove(student);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexViewModel",new {did = student.departID });
         }
     }
 }

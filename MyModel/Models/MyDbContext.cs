@@ -6,14 +6,14 @@ namespace MyModel.Models;
 
 public partial class MyDbContext : DbContext
 {
-    //public MyDbContext(DbContextOptions<MyDbContext> options)
-    //    : base(options)
-    //{
-    //}
-
-    public MyDbContext()
+    public MyDbContext(DbContextOptions<MyDbContext> options)
+        : base(options)
     {
     }
+
+    //public MyDbContext()
+    //{
+    //}
 
     public virtual DbSet<tStudent> tStudent { get; set; }
 
@@ -38,11 +38,11 @@ public partial class MyDbContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Data Source=C501A104;Database=dbStudents;User ID=user;Password=12345678;TrustServerCertificate=True");
-        }
-    }
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    if (!optionsBuilder.IsConfigured)
+    //    {
+    //        optionsBuilder.UseSqlServer("Data Source=C501A104;Database=dbStudents;User ID=user;Password=12345678;TrustServerCertificate=True");
+    //    }
+    //}
 }

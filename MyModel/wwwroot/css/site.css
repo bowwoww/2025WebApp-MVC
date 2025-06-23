@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.highlight {
+    background-color: #ffd800;
+    font-weight: bold;
+}
