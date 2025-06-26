@@ -1,0 +1,35 @@
+﻿@model Northwind_DBFirst.Models.VMProducts
+
+<h2>產品分類查詢</h2>
+
+<form method="get">
+    <select id="cateSelect" name="categoryId">
+        <option value="">-- 請選擇分類 --</option>
+        @foreach (var cat in Model.Categories)
+        {
+            var selected = Model.selectedCategory == cat.CategoryId ? "selected" : null;
+            <option value="@cat.CategoryId" selected="@selected">@cat.CategoryName</option>
+        }
+
+    </select>
+</form>
+<div id="ProductTable">
+	@await Html.PartialAsync("ProductTable", Model.Products)
+</div>
+
+@section scripts {
+	<script>
+		document.getElementById("cateSelect").addEventListener("change", function () {
+			var categoryID = this.value;
+			fetch(`/ProductCategory/ProductTable?categoryId=${categoryID}`)
+				.then(response => response.text())
+				.then(html => {
+					document.getElementById("ProductTable").innerHTML = html;
+				})
+				.catch(error => {
+					console.error('Error fetching products:', error);
+					document.getElementById("ProductTable").innerHTML = "<div class='text-danger'>無法載入產品資料。</div>";
+				});
+		});
+	</script>
+}

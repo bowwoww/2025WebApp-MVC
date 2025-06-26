@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Northwind_DBFirst.Models.Product>
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.FirstOrDefault().ProductId)</th>
+                <th>產品名稱</th>
+                <th>單價</th>
+                <th>庫存</th>
+                <th>銷售中</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                var red = p.Discontinued ? "bg-danger text-light" : "";
+                <tr class="@red">
+                    <td>@p.ProductId</td>
+                    <td>@p.ProductName</td>
+                    <td>@p.UnitPrice</td>
+                    <td>@p.UnitsInStock</td>
+                    <td>@Html.Raw(p.Discontinued ? "<span class=\"text-info\">停售</span>" : "<span>是</span>")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>此分類沒有產品。</div>
+}

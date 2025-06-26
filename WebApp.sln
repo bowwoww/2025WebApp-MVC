@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewApp", "ViewApp\ViewApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyModel", "MyModel\MyModel.csproj", "{C3A97DB5-F554-435A-AB55-F65FA9E56B05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Northwind_DBFirst", "Northwind_DBFirst\Northwind_DBFirst.csproj", "{C8109885-20E7-F523-D8B4-FE92B1463446}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{C3A97DB5-F554-435A-AB55-F65FA9E56B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3A97DB5-F554-435A-AB55-F65FA9E56B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3A97DB5-F554-435A-AB55-F65FA9E56B05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8109885-20E7-F523-D8B4-FE92B1463446}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8109885-20E7-F523-D8B4-FE92B1463446}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8109885-20E7-F523-D8B4-FE92B1463446}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8109885-20E7-F523-D8B4-FE92B1463446}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
