@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyModel", "MyModel\MyModel.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Northwind_DBFirst", "Northwind_DBFirst\Northwind_DBFirst.csproj", "{C8109885-20E7-F523-D8B4-FE92B1463446}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyModel_CodeFirst", "MyModel_CodeFirst\MyModel_CodeFirst.csproj", "{95F1B32F-D385-4343-94E7-342DBC94D554}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C8109885-20E7-F523-D8B4-FE92B1463446}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8109885-20E7-F523-D8B4-FE92B1463446}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8109885-20E7-F523-D8B4-FE92B1463446}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95F1B32F-D385-4343-94E7-342DBC94D554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95F1B32F-D385-4343-94E7-342DBC94D554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95F1B32F-D385-4343-94E7-342DBC94D554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95F1B32F-D385-4343-94E7-342DBC94D554}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

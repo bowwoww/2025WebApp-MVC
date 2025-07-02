@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Message>
+@{
+	ViewData["Title"] = "Home Page";
+
+}
+
+@if (Model.FirstOrDefault() != null)
+{
+	foreach (var item in Model)
+	{
+		<div class="alert alert-info">
+			<div>
+				<h4>@item.Subject</h4> 
+				<span>@item.Sender</span> : <span>@item.SentDate</span>
+				<textarea class="form-control" rows="3" readonly>@item.Body</textarea>
+				<form method="post" asp-action="DeleteMessage" asp-route-id="@item.Id">
+					<button type="submit" class="btn btn-danger mt-2">刪除留言</button>
+				</form>
+				<button type="button" class="btn btn-secondary mt-2 reply-btn" data-id="@item.Id">回覆</button>
+				<div class="ms-2 me-2 bg-light">
+					@if(item.Responses != null) {
+						foreach (var reply in item.Responses)
+						{
+							<div>
+								<h5 class="bg-warning">@reply.Sender 的回覆: </h5>
+								<span>@reply.SentDate</span>
+								<textarea class="form-control" rows="3" readonly>@reply.Body</textarea>
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<h2>沒有資料</h2>
+}
+
+<form id="mainForm" method="post" asp-action="NewMessage">
+	<div class="form-group">
+		<label for="subject" id="subject_text">主旨</label>
+		<input type="text" class="form-control" id="subject" name="subject" required />
+	</div>
+	<div class="form-group">
+		<label for="sender">寄件者</label>
+		<input type="text" class="form-control" id="sender" name="sender" required />
+	</div>
+	<div class="form-group">
+		<label for="body">內容</label>
+		<textarea class="form-control" id="body" name="body" rows="3" required></textarea>
+	</div>
+	<button type="submit" class="btn btn-primary">送出留言</button>
+</form>
+
+@section Scripts {
+	<script>
+		function adjustTextareaRows(textarea) {
+			const lines = textarea.value.split('\n').length;
+			textarea.rows = Math.max(3, lines);
+		}
+
+		document.querySelectorAll('textarea[readonly]').forEach(function(textarea) {
+			adjustTextareaRows(textarea);
+		});
+
+		document.querySelectorAll('.reply-btn').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				var id = this.getAttribute('data-id');
+				var subjectInput = document.getElementById('subject');
+				subjectInput.value = id;
+				subjectInput.readOnly = true;
+				document.getElementById('subject_text').innerText = '回覆給: ';
+				var form = document.getElementById('mainForm');
+				form.setAttribute('action', '@Url.Action("ReplyMessage", "Home")');
+			});
+		});
+	</script>
+}
