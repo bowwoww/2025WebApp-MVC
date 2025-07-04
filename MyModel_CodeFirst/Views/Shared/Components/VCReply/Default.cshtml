@@ -1,0 +1,21 @@
+﻿@model IEnumerable<MyModel_CodeFirst.Models.Response>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+<body>
+		@foreach (var reply in Model)
+		{
+			<div>
+				<h5 class="bg-warning">@reply.Sender 的回覆: </h5>
+				<div class="bg-info">@reply.SentDate</div>
+				<div class="card rounded-2 mt-2 p-2">@Html.Raw(reply.Body.Replace("\r\n", "<br>"))</div>
+			</div>
+		}
+</body>
+</html>

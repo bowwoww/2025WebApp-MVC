@@ -19,30 +19,37 @@ namespace MyModel_CodeFirst.Controllers
 
         public async Task<IActionResult> Index()
         {
+            //取四筆最新留言
             var latestMessages = await db.Messages
                 .OrderByDescending(m => m.SentDate)
                 .Take(4)
                 .ToListAsync();
 
-            foreach (var m in latestMessages)
-            {
-                m.Responses = await db.Responses
-                    .AsNoTracking()
-                    .Where(r => r.Id == m.Id)
-                    .OrderByDescending(r => r.SentDate)
-                    .ToListAsync();
-            }
+            //foreach (var m in latestMessages)
+            //{
+            //    m.Responses = await db.Responses
+            //        .AsNoTracking()
+            //        .Where(r => r.Id == m.Id)
+            //        .OrderByDescending(r => r.SentDate)
+            //        .ToListAsync();
+            //}
             return View(latestMessages);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> NewMessage(string subject, string sender, string body, IFormFile formFile)
         {
             string? uploadPhoto = null;
             string newId = Guid.NewGuid().ToString("N");
             if (formFile != null && formFile.Length > 0)
             {
-                var fileName = newId + ".jpg";
+                if (formFile.ContentType != "image/jpeg" && formFile.ContentType != "image/png")
+                {
+                    ModelState.AddModelError("formFile", "只允許上傳 JPEG 或 PNG 圖片。");
+                    return RedirectToAction("Index");
+                }
+                var fileName = newId + Path.GetExtension(formFile.FileName);
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", fileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {

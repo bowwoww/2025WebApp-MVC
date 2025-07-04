@@ -19,10 +19,10 @@
 					}
 					<div class="text-start">
 						<h4>@item.Subject</h4> 
-						<span>@item.Sender at @item.SentDate</span>
+						<span class="text-info fw-bold">@item.Sender</span> at <span> @item.SentDate</span>
 					</div>
                 </div>
-				<textarea class="form-control" rows="3" readonly>@item.Body</textarea>
+				<p class="card rounded-2 bg-light mt-2 p-2">@Html.Raw(item.Body.Replace("\r\n","<br>"))</p>
 				<div class="d-inline-flex">
 					<form method="post" asp-action="DeleteMessage" asp-route-id="@item.Id">
 						<button type="submit" class="btn btn-danger mt-2">刪除留言</button>
@@ -30,16 +30,7 @@
 					<button type="button" class="btn btn-secondary mt-2 reply-btn" data-id="@item.Id">回覆</button>
 				</div>
 				<div class="ms-2 me-2 bg-light">
-					@if(item.Responses != null) {
-						foreach (var reply in item.Responses)
-						{
-							<div>
-								<h5 class="bg-warning">@reply.Sender 的回覆: </h5>
-								<span>@reply.SentDate</span>
-								<textarea class="form-control" rows="3" readonly>@reply.Body</textarea>
-							</div>
-						}
-					}
+                    @await Component.InvokeAsync("VCReply", new { id = item.Id })
 				</div>
 			</div>
 		</div>
@@ -66,21 +57,15 @@ else
 	<div class="form-group">
 		<label for="file">附加檔案 (選填)</label>
         <input type="file" class="form-control-file" id="file" name="formFile" />
+		<img id="previewImg" style="max-width:100px" />
 	</div>
+	<div id="warning_text" class="text-danger"></div>
 	<button type="submit" class="btn btn-primary">送出留言</button>
 </form>
 
 @section Scripts {
 	<script>
-		function adjustTextareaRows(textarea) {
-			const lines = textarea.value.split('\n').length;
-			textarea.rows = Math.max(3, lines);
-		}
-
-		document.querySelectorAll('textarea[readonly]').forEach(function(textarea) {
-			adjustTextareaRows(textarea);
-		});
-
+		
 		document.querySelectorAll('.reply-btn').forEach(function(btn) {
 			btn.addEventListener('click', function() {
 				var id = this.getAttribute('data-id');
@@ -92,5 +77,24 @@ else
 				form.setAttribute('action', '@Url.Action("ReplyMessage", "Home")');
 			});
 		});
+
+        // 當選擇檔案時，顯示預覽圖片
+        document.getElementById('file').addEventListener('change', function(event) {
+			var file = event.target.files[0];
+			if (file && file.type.startsWith('image/')) {
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var img = document.getElementById('previewImg');
+					img.src = e.target.result;
+					img.style.display = 'block';
+				};
+				reader.readAsDataURL(file);
+                document.getElementById('warning_text').innerText = ''; // 清除警告訊息
+			} else {
+				document.getElementById('previewImg').style.display = 'none';
+                document.getElementById('file').value = ''; // 清除選擇的檔案
+                document.getElementById('warning_text').innerText = '請選擇圖片檔案';
+			}
+        });
 	</script>
 }
