@@ -10,13 +10,25 @@
 	{
 		<div class="alert alert-info">
 			<div>
-				<h4>@item.Subject</h4> 
-				<span>@item.Sender</span> : <span>@item.SentDate</span>
+				<div class="d-inline-flex">
+					@if (!string.IsNullOrEmpty(item.UploadPhoto))
+					{
+						<div class="">
+							<img src="~/UploadPhotos/@item.UploadPhoto" style="max-width:100px;" />
+						</div>
+					}
+					<div class="text-start">
+						<h4>@item.Subject</h4> 
+						<span>@item.Sender at @item.SentDate</span>
+					</div>
+                </div>
 				<textarea class="form-control" rows="3" readonly>@item.Body</textarea>
-				<form method="post" asp-action="DeleteMessage" asp-route-id="@item.Id">
-					<button type="submit" class="btn btn-danger mt-2">刪除留言</button>
-				</form>
-				<button type="button" class="btn btn-secondary mt-2 reply-btn" data-id="@item.Id">回覆</button>
+				<div class="d-inline-flex">
+					<form method="post" asp-action="DeleteMessage" asp-route-id="@item.Id">
+						<button type="submit" class="btn btn-danger mt-2">刪除留言</button>
+					</form>
+					<button type="button" class="btn btn-secondary mt-2 reply-btn" data-id="@item.Id">回覆</button>
+				</div>
 				<div class="ms-2 me-2 bg-light">
 					@if(item.Responses != null) {
 						foreach (var reply in item.Responses)
@@ -38,7 +50,7 @@ else
 	<h2>沒有資料</h2>
 }
 
-<form id="mainForm" method="post" asp-action="NewMessage">
+<form id="mainForm" method="post" asp-action="NewMessage" enctype="multipart/form-data">
 	<div class="form-group">
 		<label for="subject" id="subject_text">主旨</label>
 		<input type="text" class="form-control" id="subject" name="subject" required />
@@ -50,6 +62,10 @@ else
 	<div class="form-group">
 		<label for="body">內容</label>
 		<textarea class="form-control" id="body" name="body" rows="3" required></textarea>
+	</div>
+	<div class="form-group">
+		<label for="file">附加檔案 (選填)</label>
+        <input type="file" class="form-control-file" id="file" name="formFile" />
 	</div>
 	<button type="submit" class="btn btn-primary">送出留言</button>
 </form>

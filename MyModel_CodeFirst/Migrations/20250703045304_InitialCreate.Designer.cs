@@ -12,7 +12,7 @@ using MyModel_CodeFirst.Models;
 namespace MyModel_CodeFirst.Migrations
 {
     [DbContext(typeof(MessageBoardDBContext))]
-    [Migration("20250630033438_InitialCreate")]
+    [Migration("20250703045304_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -29,7 +29,8 @@ namespace MyModel_CodeFirst.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -41,7 +42,7 @@ namespace MyModel_CodeFirst.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Subject")
                         .IsRequired()
@@ -53,19 +54,27 @@ namespace MyModel_CodeFirst.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("PK_Message");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("MyModel_CodeFirst.Models.Response", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(36)");
+                    b.Property<int>("ResponseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResponseId"));
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Id")
+                        .IsRequired()
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Sender")
                         .IsRequired()
@@ -73,11 +82,14 @@ namespace MyModel_CodeFirst.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("ResponseId")
+                        .HasName("PK_Response");
 
-                    b.ToTable("Responses");
+                    b.HasIndex("Id");
+
+                    b.ToTable("Responses", (string)null);
                 });
 
             modelBuilder.Entity("MyModel_CodeFirst.Models.Response", b =>

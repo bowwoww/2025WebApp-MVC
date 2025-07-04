@@ -9,84 +9,98 @@ namespace MyModel_CodeFirst.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
         readonly MessageBoardDBContext db;
 
-        // Constructor for dependency injection
-
-        public HomeController(ILogger<HomeController> logger, MessageBoardDBContext db  )
+        public HomeController(ILogger<HomeController> logger, MessageBoardDBContext db)
         {
             _logger = logger;
             this.db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //傳遞最新的1筆留言到View
-            var latestMessages = db.Messages
+            var latestMessages = await db.Messages
                 .OrderByDescending(m => m.SentDate)
                 .Take(4)
-                .ToList();
-            latestMessages.ForEach(m =>
+                .ToListAsync();
+
+            foreach (var m in latestMessages)
             {
-                //載入每個留言的回覆
-                m.Responses = db.Responses
+                m.Responses = await db.Responses
                     .AsNoTracking()
                     .Where(r => r.Id == m.Id)
                     .OrderByDescending(r => r.SentDate)
-                    .ToList();
-            });
+                    .ToListAsync();
+            }
             return View(latestMessages);
         }
 
-        // sumbit增加新的Message
-
         [HttpPost]
-        public IActionResult NewMessage(string subject,string sender,string body)
+        public async Task<IActionResult> NewMessage(string subject, string sender, string body, IFormFile formFile)
         {
-            if(sender.IsNullOrEmpty() == false)
+            string? uploadPhoto = null;
+            string newId = Guid.NewGuid().ToString("N");
+            if (formFile != null && formFile.Length > 0)
+            {
+                var fileName = newId + ".jpg";
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await formFile.CopyToAsync(stream);
+                }
+                uploadPhoto = fileName;
+            }
+
+            if (sender.IsNullOrEmpty() == false)
             {
                 Message nm = new Message
                 {
                     Subject = subject,
                     Sender = sender,
                     Body = body,
-                    SentDate = DateTime.Now, //設定發文日期為現在時間
-                    Id = Guid.NewGuid().ToString("N"), //產生新的GUID作為Id   
+                    SentDate = DateTime.Now,
+                    Id = newId,
                 };
-                //新增留言
+                if (uploadPhoto != null)
+                {
+                    nm.UploadPhoto = uploadPhoto;
+                }
                 db.Messages.Add(nm);
-                db.SaveChanges();
-            }   
+                await db.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
         }
 
-        public IActionResult ReplyMessage(string subject,string sender,string body)
+        public async Task<IActionResult> ReplyMessage(string subject, string sender, string body)
         {
             if (sender.IsNullOrEmpty() == false)
             {
-                //新增回覆
                 Response newResponse = new Response
                 {
                     Id = subject,
                     Sender = sender,
                     Body = body,
-                    SentDate = DateTime.Now, //設定回覆日期為現在時間
+                    SentDate = DateTime.Now,
                 };
                 db.Responses.Add(newResponse);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
 
-        public IActionResult DeleteMessage(string id)
+        public async Task<IActionResult> DeleteMessage(string id)
         {
-            //刪除留言
-            var message = db.Messages.Find(id);
+            var message = await db.Messages.FindAsync(id);
             if (message != null)
             {
                 db.Messages.Remove(message);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
+            }
+            var reply = await db.Responses.Where(r => r.Id == id).ToListAsync();
+            if (reply != null && reply.Count > 0)
+            {
+                db.Responses.RemoveRange(reply);
+                await db.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }

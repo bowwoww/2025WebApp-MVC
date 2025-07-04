@@ -8,6 +8,9 @@ namespace MyModel_CodeFirst.Models
     //[ModelMetadataType(typeof(ResponseMetadata))]
     public partial class Response
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ResponseId { get; set; }
         [DisplayName("回覆者")]
         [Required(ErrorMessage = "回覆者為必填欄位")]
         [StringLength(50, ErrorMessage = "回覆者名稱不能超過50個字元")]
