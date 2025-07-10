@@ -35,6 +35,31 @@ namespace MyModel_CodeFirst.Controllers
             //}
             return View(latestMessages);
         }
+        public async Task<IActionResult> GetMessage(int skip = 0, int take = 4)
+        {
+            var messages = await db.Messages
+                .OrderByDescending(m => m.SentDate)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            if(messages.Count == 0)
+            {
+                return Json("");
+            }
+            else
+            {
+                return PartialView("_MessageListPartial", messages);
+            }
+                
+        }
+
+        public async Task<IActionResult> GetReponsesByViewComponent(string id)
+        {
+            return await Task.Run(() =>
+            {
+                return ViewComponent("VCReply", new { id = id });
+            });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -47,7 +72,7 @@ namespace MyModel_CodeFirst.Controllers
                 if (formFile.ContentType != "image/jpeg" && formFile.ContentType != "image/png")
                 {
                     ModelState.AddModelError("formFile", "只允許上傳 JPEG 或 PNG 圖片。");
-                    return RedirectToAction("Index");
+                    return Json("ERROR");
                 }
                 var fileName = newId + Path.GetExtension(formFile.FileName);
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", fileName);
@@ -74,17 +99,20 @@ namespace MyModel_CodeFirst.Controllers
                 }
                 db.Messages.Add(nm);
                 await db.SaveChangesAsync();
+
+                return Json(nm);
             }
             return RedirectToAction("Index");
         }
-
-        public async Task<IActionResult> ReplyMessage(string subject, string sender, string body)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReplyMessage(string messageId, string sender, string body)
         {
             if (sender.IsNullOrEmpty() == false)
             {
                 Response newResponse = new Response
                 {
-                    Id = subject,
+                    Id = messageId,
                     Sender = sender,
                     Body = body,
                     SentDate = DateTime.Now,

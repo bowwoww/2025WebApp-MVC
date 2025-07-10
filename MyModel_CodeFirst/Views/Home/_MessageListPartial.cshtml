@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Message>
+
+@if (Model.FirstOrDefault() != null)
+{
+	foreach (var item in Model)
+	{
+		<div class="alert alert-info">
+			<div>
+				<div class="d-inline-flex">
+					@if (!string.IsNullOrEmpty(item.UploadPhoto))
+					{
+						<div class="">
+							<img src="~/UploadPhotos/@item.UploadPhoto" style="max-width:100px;" />
+						</div>
+					}
+					<div class="text-start">
+						<h4>@item.Subject</h4>
+						<span class="text-info fw-bold">@item.Sender</span> at <span> @item.SentDate</span>
+					</div>
+				</div>
+				<p class="card rounded-2 bg-light mt-2 p-2">@Html.Raw(item.Body.Replace("\r\n", "<br>"))</p>
+				<div class="d-inline-flex">
+					<form method="post" asp-action="DeleteMessage" asp-route-id="@item.Id">
+						<button type="submit" class="btn btn-danger mt-2">刪除留言</button>
+					</form>
+					<button type="button" class="btn btn-secondary mt-2 reply-btn" data-id="@item.Id" data-poster="@item.Sender">回覆</button>
+				</div>
+				<div class="ms-2 me-2 bg-light" id="replyList">
+					@await Component.InvokeAsync("VCReply", new { id = item.Id })
+				</div>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<h2>沒有資料</h2>
+}

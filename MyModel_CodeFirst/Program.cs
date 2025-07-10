@@ -8,6 +8,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MyModel_CodeFirst.Models.MessageBoardDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MessageBoardConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Initialize the database with seed data
@@ -33,6 +43,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
