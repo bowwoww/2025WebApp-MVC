@@ -17,13 +17,13 @@ namespace MyModel_CodeFirst.Controllers
             this.db = db;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             //取四筆最新留言
-            var latestMessages = await db.Messages
-                .OrderByDescending(m => m.SentDate)
-                .Take(4)
-                .ToListAsync();
+            //var latestMessages = await db.Messages
+            //    .OrderByDescending(m => m.SentDate)
+            //    .Take(4)
+            //    .ToListAsync();
 
             //foreach (var m in latestMessages)
             //{
@@ -33,7 +33,8 @@ namespace MyModel_CodeFirst.Controllers
             //        .OrderByDescending(r => r.SentDate)
             //        .ToListAsync();
             //}
-            return View(latestMessages);
+
+            return View();
         }
         public async Task<IActionResult> GetMessage(int skip = 0, int take = 4)
         {

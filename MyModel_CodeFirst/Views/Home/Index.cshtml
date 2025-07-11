@@ -48,7 +48,8 @@
 	}
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script>
-
+		let skip = 4,take = 0;
+		const default_take = 4,default_skip = 4;
 		//如果使用asp的話可以啟用後端驗證
         //$.validator.unobtrusive.parse($('#mainForm')); // 解析表單以啟用驗證
 
@@ -56,16 +57,25 @@
 		document.addEventListener('DOMContentLoaded', function() {
                setBtnEvent(); // 初始化回覆按鈕事件
 			   setImgEvent(); // 初始化圖片預覽事件
+			   $('#message-list').load("/Home/GetMessage",function(){
+					setBtnEvent(); // 設置回覆按鈕事件
+					setImgEvent(); // 設置圖片預覽事件
+			   });
 		});
 
         // prevent default form submission
         document.getElementById('mainForm').addEventListener('submit', function(event) {
             event.preventDefault(); // 阻止表單的默認提交行為
 
+			//根據留言或者回複改變action link
 			var linkUrl = "/Home/NewMessage";
             if(event.target.messageId.value){
 				linkUrl = "/Home/ReplyMessage";
+			} else{
+                take += 1; // 每次提交後增加載入的留言數量
+				skip += 1;
 			}
+
 
 			$.ajax({
 				type: "Post",
@@ -73,11 +83,13 @@
 				data: $('#mainForm').serialize(),
 				success: function (data) {
 					$('#message-list').load("/Home/GetMessage",function(){
-						// 重新載入留言列表
-						setBtnEvent(); // 重新設置回覆按鈕事件
-                        setImgEvent(); // 重新設置圖片預覽事件
+                        if(linkUrl == "/Home/ReplyMessage") return; // 如果是回覆留言則不重新載入留言列表
+						$('#more-message').load(`/Home/GetMessage?skip=${default_skip}&take=${take}`,function(){
+							// 重新載入留言列表
+							setBtnEvent(); // 重新設置回覆按鈕事件
+					   });
 					});
-					$('more-message').load(`/Home/GetMessage?skip=${skip}&take=${take}`);
+
                     document.getElementById('mainForm').reset(); //重置表單
 
 					document.getElementById('previewImg').src = ''; // 清除預覽圖片
@@ -141,17 +153,19 @@
 		   });
 		}
 
-		let skip = 4;
-		const take = 4;
+
 
 		document.getElementById('load-more').addEventListener('click', function() {
-			fetch(`/Home/GetMessage?skip=${skip}&take=${take}`)
+           
+			fetch(`/Home/GetMessage?skip=${skip}&take=${default_take}`)
 				.then(response => response.text())
 				.then(html => {
-
-					if(html.trim() != '""') {
+					if(html.length != 2) {
 						document.getElementById('more-message').insertAdjacentHTML('beforeend', html);
+						// take 要增加載入的留言數量
+                        take = html.split('div class="message').length - 1; // 計算新增的留言數量
                         skip += take; // 更新跳過的數量
+                           console.log(`Loaded ${take} more messages.`);
 					}
 				});
 		});

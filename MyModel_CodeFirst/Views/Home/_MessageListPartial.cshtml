@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Message>
 
-@if (Model.FirstOrDefault() != null)
+@if (Model != null && Model.Any())
 {
 	foreach (var item in Model)
 	{
-		<div class="alert alert-info">
+		<div class="message alert alert-info">
 			<div>
 				<div class="d-inline-flex">
 					@if (!string.IsNullOrEmpty(item.UploadPhoto))
