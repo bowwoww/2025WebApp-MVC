@@ -28,6 +28,8 @@ namespace Northwind_DBFirst.Controllers
             var photo = employee.Photo.Skip(78).ToArray(); // Skip the first 78 bytes of the image data
 
             return File(photo, "image/jpeg");
+
+            
         }
 
         // GET: Employees

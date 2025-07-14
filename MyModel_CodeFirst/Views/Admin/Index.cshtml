@@ -1,0 +1,75 @@
+﻿@model IEnumerable<MyModel_CodeFirst.Models.Message>
+@*
+    use AdminLayout
+*@
+@{
+    Layout = "_LayoutForAdmin";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <h1 class="mt-4">Admin Dashboard</h1>
+    <p>Welcome to the admin dashboard. Here you can manage messages.</p>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Messages</h2>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Sender</th>
+                        <th>Sent Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var message in Model)
+                    {
+                        <tr data-bs-toggle="collapse" data-bs-target="#B@(message.Id)">
+                            <td>@message.Subject</td>
+                            <td>@message.Sender</td>
+                            <td>@message.SentDate.ToString("g")</td>
+                            <td>
+                                <a href="@Url.Action("DeleteMessage", "Home", new { id = message.Id })" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                        <tr class="collapse" id="B@(message.Id)">
+                            <td>
+                                @await Component.InvokeAsync("VCReply", new { id = message.Id, forAdmin = true })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@* Add more admin functionalities as needed *@
+
+
+@section Scripts
+{
+    <script>
+        // Add any JavaScript needed for admin functionalities
+
+        function deleteReply(responseId,messageId) {
+            if (confirm("確定要刪除這個回覆嗎？")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteReply", "Admin")',
+                    type: 'POST',
+                    data: { id: responseId },
+                    success: function (result) {
+                        // 重新載入被刪除的回覆表 (使用viewCompent)
+
+                        $('#B' + messageId).find('td').load(`/Admin/GetGetResponses?messageId=${messageId}`);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("刪除失敗：" + error);
+                    }
+                });
+            }
+        }
+    </script>
+}

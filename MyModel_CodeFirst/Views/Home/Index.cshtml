@@ -55,8 +55,6 @@
 
         //init after the page is loaded
 		document.addEventListener('DOMContentLoaded', function() {
-               setBtnEvent(); // 初始化回覆按鈕事件
-			   setImgEvent(); // 初始化圖片預覽事件
 			   $('#message-list').load("/Home/GetMessage",function(){
 					setBtnEvent(); // 設置回覆按鈕事件
 					setImgEvent(); // 設置圖片預覽事件

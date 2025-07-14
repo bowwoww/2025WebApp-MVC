@@ -1,0 +1,27 @@
+﻿@model IEnumerable<MyModel_CodeFirst.Models.Response>
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+<body>
+	@foreach (var reply in Model)
+	{
+		<div class="pe-3 response-box">
+			<a class="btn btn-outline-danger btn-sm float-end" onclick="deleteReply(@reply.ResponseId,'@reply.Id')">刪除</a>
+			<div class="bg-info fs-4" style="max-width:600px">@reply.SentDate @reply.Sender 的回覆: @reply.Body</div>
+		</div>
+	}
+</body>
+</html>
+
+@section Scripts {
+	<script>
+		// JavaScript code to handle any additional functionality if needed
+
+	</script>
+}
