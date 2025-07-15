@@ -12,6 +12,8 @@ namespace MyModel_CodeFirst.Models
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
 
+        public virtual DbSet<LoginUser> LoginUsers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<Message>().Metadata.SetIsTableExcludedFromMigrations(true);

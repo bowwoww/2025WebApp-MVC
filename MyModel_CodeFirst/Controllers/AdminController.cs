@@ -22,6 +22,7 @@ namespace MyModel_CodeFirst.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]  
         public async Task<IActionResult> DeleteReply(int id)
         {
             var message = await _db.Responses.FindAsync(id);
@@ -34,7 +35,7 @@ namespace MyModel_CodeFirst.Controllers
             return Json(message);
         }
 
-        public async Task<IActionResult> GetGetResponses(string messageId)
+        public async Task<IActionResult> GetResponses(string messageId)
         {
             var responses = await _db.Responses
                 .Where(r => r.Id == messageId)

@@ -124,14 +124,25 @@ namespace MyModel_CodeFirst.Controllers
             return RedirectToAction("Index");
         }
 
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> DeleteMessage(string id)
         {
             var message = await db.Messages.FindAsync(id);
             if (message != null)
             {
+                // 刪除上傳的照片檔案
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", message.UploadPhoto);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+
                 db.Messages.Remove(message);
                 await db.SaveChangesAsync();
             }
+            //由於關聯資料庫設定 Code First 的 Cascade Delete 通常已將關聯的Fk一併刪除
             var reply = await db.Responses.Where(r => r.Id == id).ToListAsync();
             if (reply != null && reply.Count > 0)
             {

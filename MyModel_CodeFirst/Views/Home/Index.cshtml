@@ -32,7 +32,7 @@
 	</div>
 	<div class="form-group">
 		<label for="file">附加檔案 (選填)</label>
-        <input type="file" class="form-control-file" id="file" name="formFile" />
+		<input type="file" class="form-control-file" id="formFile" name="formFile" />
 		<img id="previewImg" style="max-width:100px" />
 	</div>
 	<div id="warning_text" class="text-danger"></div>
@@ -74,11 +74,14 @@
 				skip += 1;
 			}
 
+               var formData =  new FormData(this); // 使用 FormData 來處理檔案上傳
 
 			$.ajax({
 				type: "Post",
 				url: linkUrl,
-				data: $('#mainForm').serialize(),
+				data: formData,
+				processData: false,
+                contentType: false,
 				success: function (data) {
 					$('#message-list').load("/Home/GetMessage",function(){
                         if(linkUrl == "/Home/ReplyMessage") return; // 如果是回覆留言則不重新載入留言列表
@@ -88,15 +91,7 @@
 					   });
 					});
 
-                    document.getElementById('mainForm').reset(); //重置表單
 
-					document.getElementById('previewImg').src = ''; // 清除預覽圖片
-                    document.getElementById('previewImg').style.display = 'none'; // 隱藏預覽圖片
-                    document.getElementById('subject_text').innerText = '主旨'; // 重置主旨文字
-                    document.getElementById('messageId').value = ''; // 清除隱藏的ID欄位
-                    document.getElementById('subject').disabled = false; // 啟用主旨輸入框
-                    document.getElementById('warning_text').innerText = ''; // 清除警告訊息
-                    document.getElementById('file').parentElement.style.display = 'block'; // 顯示檔案上傳區域
 
      //                $('#previewImg').src = ''; 清除預覽圖片
 					// $('#previewImg').style.display = 'none'; 隱藏預覽圖片
@@ -125,14 +120,14 @@
 					var form = document.getElementById('mainForm');
 					form.setAttribute('action', '@Url.Action("ReplyMessage", "Home")');
 					document.getElementById('sender').focus(); // 將焦點移到內容輸入框
-					document.getElementById('file').parentElement.style.display = 'none'; // 隱藏預覽圖片
+					   document.getElementById('formFile').parentElement.style.display = 'none'; // 隱藏預覽圖片
 				});
                });
 		}
 
 		function setImgEvent(){
 			// 當選擇檔案時，顯示預覽圖片
-		   document.getElementById('file').addEventListener('change', function(event) {
+			  document.getElementById('formFile').addEventListener('change', function(event) {
 			   var file = event.target.files[0];
 			   if (file && file.type.startsWith('image/')) {
 				   var reader = new FileReader();
@@ -145,12 +140,23 @@
 				   document.getElementById('warning_text').innerText = ''; // 清除警告訊息
 			   } else {
 				   document.getElementById('previewImg').style.display = 'none';
-				   document.getElementById('file').value = ''; // 清除選擇的檔案
+				   document.getElementById('formFile').value = ''; // 清除選擇的檔案
 				   document.getElementById('warning_text').innerText = '請選擇圖片檔案';
 			   }
 		   });
 		}
 
+		function resetForm(){
+			document.getElementById('mainForm').reset(); //重置表單
+
+			document.getElementById('previewImg').src = ''; // 清除預覽圖片
+			document.getElementById('previewImg').style.display = 'none'; // 隱藏預覽圖片
+			document.getElementById('subject_text').innerText = '主旨'; // 重置主旨文字
+			document.getElementById('messageId').value = ''; // 清除隱藏的ID欄位
+			document.getElementById('subject').disabled = false; // 啟用主旨輸入框
+			document.getElementById('warning_text').innerText = ''; // 清除警告訊息
+			document.getElementById('formFile').parentElement.style.display = 'block'; // 顯示檔案上傳區域
+		}
 
 
 		document.getElementById('load-more').addEventListener('click', function() {

@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.response-box .response-message:hover {
+    background-color: #ffd800;
+    cursor: pointer;
+}
