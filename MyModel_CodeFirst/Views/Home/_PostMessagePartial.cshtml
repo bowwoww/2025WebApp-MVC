@@ -1,0 +1,26 @@
+﻿<form id="mainForm" method="post" asp-action="NewMessage" enctype="multipart/form-data">
+	<div class="form-group">
+		<input type="text" class="form-control" id="messageId" name="messageId" hidden />
+	</div>
+	<div class="form-group">
+		<label for="subject" id="subject_text">主旨</label>
+		<input type="text" class="form-control" id="subject" name="subject" required />
+	</div>
+	<div class="form-group">
+		<label for="sender">寄件者</label>
+		<input type="text" class="form-control" id="sender" name="sender" required />
+	</div>
+	<div class="form-group">
+		<label for="body">內容</label>
+		<textarea class="form-control" id="body" name="body" rows="3" required></textarea>
+	</div>
+	<div class="form-group">
+		<label for="file">附加檔案 (選填)</label>
+		<input type="file" class="form-control-file" id="formFile" name="formFile" />
+		<img id="previewImg" style="max-width:100px" />
+	</div>
+	<div id="warning_text" class="text-danger"></div>
+	<div class="d-grid gap-2">
+		<button type="submit" class="btn btn-primary">送出留言</button>
+	</div>
+</form>

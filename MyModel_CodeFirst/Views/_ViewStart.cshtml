@@ -1,3 +1,19 @@
 ﻿@{
-    Layout = "_Layout";
+    //根據不同的role設置不同的Layout
+    if(User.IsInRole("Admin"))
+    {
+        Layout = "_LayoutForAdmin";
+    }
+    else if(User.IsInRole("User"))
+    {
+        Layout = "_UserLayout";
+    }
+    else if(User.IsInRole("Guest"))
+    {
+        Layout = "_GuestLayout";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }

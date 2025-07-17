@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -124,6 +125,7 @@ namespace MyModel_CodeFirst.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DeleteMessage(string id)
@@ -150,6 +152,19 @@ namespace MyModel_CodeFirst.Controllers
                 await db.SaveChangesAsync();
             }
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Display(string id)
+        {
+            var message = await db.Messages
+                .Include(m => m.Responses)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            return View(message);
         }
 
         public IActionResult Privacy()

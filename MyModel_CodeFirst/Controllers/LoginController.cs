@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyModel_CodeFirst.Models;
 using System.Security.Claims;
@@ -18,7 +19,7 @@ namespace MyModel_CodeFirst.Controllers
         {
             return View();
         }
-
+        
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Login(LoginUser login)
@@ -39,7 +40,7 @@ namespace MyModel_CodeFirst.Controllers
                 var claimsIdentity = new ClaimsIdentity(claims, "Login");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 // 使用 SignInManager 進行登入
-                //await HttpContext.SignInAsync("Login",claimsPrincipal);
+                await HttpContext.SignInAsync("Login",claimsPrincipal);
                 // 登入成功後，根據角色導向不同頁面
                 return RedirectToAction("Index",user.ReturnUrl);
             }
@@ -49,6 +50,13 @@ namespace MyModel_CodeFirst.Controllers
             }
             return View();
 
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("Login");
+            
+            return RedirectToAction("Login", "Login");
         }
     }
 }

@@ -14,32 +14,9 @@
 	<button id="load-more" class="btn btn-secondary">顯示更多</button>
 </div>
 
-<form id="mainForm" method="post" asp-action="NewMessage" enctype="multipart/form-data">
-	<div class="form-group">
-		<input type="text" class="form-control" id="messageId" name="messageId" hidden/>
-	</div>
-	<div class="form-group">
-		<label for="subject" id="subject_text">主旨</label>
-		<input type="text" class="form-control" id="subject" name="subject" required />
-	</div>
-	<div class="form-group">
-		<label for="sender">寄件者</label>
-		<input type="text" class="form-control" id="sender" name="sender" required />
-	</div>
-	<div class="form-group">
-		<label for="body">內容</label>
-		<textarea class="form-control" id="body" name="body" rows="3" required></textarea>
-	</div>
-	<div class="form-group">
-		<label for="file">附加檔案 (選填)</label>
-		<input type="file" class="form-control-file" id="formFile" name="formFile" />
-		<img id="previewImg" style="max-width:100px" />
-	</div>
-	<div id="warning_text" class="text-danger"></div>
-	<div class="d-grid gap-2">
-	<button type="submit" class="btn btn-primary">送出留言</button>
-	</div>
-</form>
+<div id="post-form">
+    @await Html.PartialAsync("_PostMessagePartial")
+</div>
 
 @section Scripts {
 	
@@ -91,7 +68,7 @@
 					   });
 					});
 
-
+                       resetForm(); // 重置表單
 
      //                $('#previewImg').src = ''; 清除預覽圖片
 					// $('#previewImg').style.display = 'none'; 隱藏預覽圖片
@@ -120,7 +97,7 @@
 					var form = document.getElementById('mainForm');
 					form.setAttribute('action', '@Url.Action("ReplyMessage", "Home")');
 					document.getElementById('sender').focus(); // 將焦點移到內容輸入框
-					   document.getElementById('formFile').parentElement.style.display = 'none'; // 隱藏預覽圖片
+					document.getElementById('formFile').parentElement.style.display = 'none'; // 隱藏預覽圖片
 				});
                });
 		}

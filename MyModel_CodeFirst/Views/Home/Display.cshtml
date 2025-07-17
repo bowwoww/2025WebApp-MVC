@@ -1,0 +1,71 @@
+﻿@model MyModel_CodeFirst.Models.Message
+
+
+<div class="message alert alert-info">
+	<div>
+		<div class="d-inline-flex">
+			@if (!string.IsNullOrEmpty(Model.UploadPhoto))
+			{
+				<div class="">
+					<img src="~/UploadPhotos/@Model.UploadPhoto" style="max-width:100px;" />
+				</div>
+			}
+			<div class="text-start">
+				<h4>@Model.Subject</h4>
+				<span class="text-info fw-bold">@Model.Sender</span> at <span> @Model.SentDate</span>
+			</div>
+		</div>
+		<p class="card rounded-2 bg-light mt-2 p-2">@Html.Raw(Model.Body.Replace("\r\n", "<br>"))</p>
+		<div id="post-form">
+			@await Html.PartialAsync("_PostMessagePartial")
+		</div>
+		<div class="ms-2 me-2 bg-light" id="replyList">
+			@await Component.InvokeAsync("VCReply", new { id = Model.Id })
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+			document.addEventListener('DOMContentLoaded', function() {
+                resetFormToReply(); // 初始化表單以回覆留言
+
+        });
+
+		document.getElementById('mainForm').addEventListener('submit', function(event) {
+			event.preventDefault(); // 阻止表單的默認提交行為
+			var formData = new FormData(this); // 使用 FormData 來處理檔案上傳
+			$.ajax({
+				type: "Post",
+				url: "/Home/ReplyMessage", // 使用表單的 action 屬性
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function(response) {
+					$('#replyList').load("/Home/GetReponsesByViewComponent?id=" + '@Model.Id'); // 重新載入回覆列表
+					// 成功後的處理
+                    resetFormToReply(); // 重置表單以回覆留言
+				},
+				error: function(xhr, status, error) {
+					alert("發生錯誤: " + error);
+				}
+			});
+        });
+
+
+		function resetFormToReply () {
+				// 重置表單以回覆留言
+                document.getElementById('mainForm').reset(); // 重置表單
+				var id = '@Model.Id';
+				var subjectInput = document.getElementById('subject');
+				document.getElementById('subject_text').innerText = '回覆給: ';
+                subjectInput.value = '@Model.Sender'; // 設定主旨為寄件者名稱
+				subjectInput.disabled = true; // 禁用主旨輸入框
+				document.getElementById('messageId').value = id; // 設定隱藏的ID欄位
+				var form = document.getElementById('mainForm');
+				document.getElementById('formFile').parentElement.style.display = 'none'; 
+		}
+
+
+	</script>
+}
