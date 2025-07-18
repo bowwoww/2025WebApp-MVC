@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyModel_CodeFirst", "MyMode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{F5C960C5-EC65-4858-B2FB-2D03AB0CF31B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hotel", "Hotel\Hotel.csproj", "{BF904258-2FB0-456E-82FF-1E4C197869F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{F5C960C5-EC65-4858-B2FB-2D03AB0CF31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5C960C5-EC65-4858-B2FB-2D03AB0CF31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5C960C5-EC65-4858-B2FB-2D03AB0CF31B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF904258-2FB0-456E-82FF-1E4C197869F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF904258-2FB0-456E-82FF-1E4C197869F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF904258-2FB0-456E-82FF-1E4C197869F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF904258-2FB0-456E-82FF-1E4C197869F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
