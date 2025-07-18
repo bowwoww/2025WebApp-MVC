@@ -17,4 +17,15 @@ public class ProductsApiController : ControllerBase
         var products = _context.Products.ToList();
         return Ok(products);
     }
+
+    [HttpGet("id/{id}/pd")]
+    public IActionResult GetProduct(int id)
+    {
+        var product = _context.Products.Find(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+        return Ok(product);
+    }
 }
