@@ -1,4 +1,4 @@
-namespace Hotel.Models
+namespace ClassLibrary
 {
     public class ErrorViewModel
     {

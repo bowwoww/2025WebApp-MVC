@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using ClassLibrary;
 
-namespace Hotel.Models;
+namespace DBContextClassLibrary;
 
 public partial class HotelSysDBContext : DbContext
 {

@@ -4,21 +4,20 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hotel.Models;
+namespace ClassLibrary;
 
-public partial class MemberAccount
+public partial class MemberTel
 {
     [Key]
-    [StringLength(30)]
-    public string Account { get; set; } = null!;
+    public long SN { get; set; }
 
-    [StringLength(200)]
-    public string Password { get; set; } = null!;
+    [StringLength(20)]
+    public string Tel { get; set; } = null!;
 
     [StringLength(5)]
     public string MemberID { get; set; } = null!;
 
     [ForeignKey("MemberID")]
-    [InverseProperty("MemberAccount")]
+    [InverseProperty("MemberTel")]
     public virtual Member Member { get; set; } = null!;
 }

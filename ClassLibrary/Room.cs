@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hotel.Models;
+namespace ClassLibrary;
 
-[Keyless]
-public partial class view_RoomWithPhoto
+public partial class Room
 {
+    [Key]
     [StringLength(5)]
     public string RoomID { get; set; } = null!;
 
@@ -36,9 +36,13 @@ public partial class view_RoomWithPhoto
     [StringLength(1)]
     public string StatusCode { get; set; } = null!;
 
-    [StringLength(50)]
-    public string PhotoPath { get; set; } = null!;
+    [InverseProperty("Room")]
+    public virtual ICollection<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
 
-    [StringLength(10)]
-    public string Status { get; set; } = null!;
+    [InverseProperty("Room")]
+    public virtual ICollection<RoomPhoto> RoomPhoto { get; set; } = new List<RoomPhoto>();
+
+    [ForeignKey("StatusCode")]
+    [InverseProperty("Room")]
+    public virtual RoomStatus StatusCodeNavigation { get; set; } = null!;
 }

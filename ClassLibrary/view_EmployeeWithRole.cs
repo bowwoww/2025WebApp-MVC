@@ -4,12 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hotel.Models;
+namespace ClassLibrary;
 
-[Index("Account", Name = "UQ__Employee__B0C3AC468E5215FB", IsUnique = true)]
-public partial class Employee
+[Keyless]
+public partial class view_EmployeeWithRole
 {
-    [Key]
     [StringLength(4)]
     public string EmployeeID { get; set; } = null!;
 
@@ -37,13 +36,6 @@ public partial class Employee
     [StringLength(1)]
     public string RoleCode { get; set; } = null!;
 
-    [InverseProperty("Employee")]
-    public virtual ICollection<Order> Order { get; set; } = new List<Order>();
-
-    [ForeignKey("RoleCode")]
-    [InverseProperty("Employee")]
-    public virtual EmployeeRole RoleCodeNavigation { get; set; } = null!;
-
-    [InverseProperty("Employee")]
-    public virtual ICollection<RoomService> RoomService { get; set; } = new List<RoomService>();
+    [StringLength(15)]
+    public string RoleName { get; set; } = null!;
 }

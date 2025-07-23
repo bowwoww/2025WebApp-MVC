@@ -1,6 +1,9 @@
-using Hotel.Models;
+using ClassLibrary;
+using DBContextClassLibrary;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Hotel.Controllers
 {
@@ -15,22 +18,10 @@ namespace Hotel.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            _context.GetMemberWithTelAsync("M0001").ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                {
-                    var memberWithTels = task.Result;
-                    // Do something with memberWithTels if needed
-                }
-                else
-                {
-                    // Handle the error
-                    _logger.LogError(task.Exception, "Error fetching member with tel");
-                }
-            });
-            return View();
+            var result = await _context.GetMemberWithTelAsync("A0001");
+            return View(result);
             
         }
 

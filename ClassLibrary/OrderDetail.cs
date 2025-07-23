@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hotel.Models;
+namespace ClassLibrary;
 
 [PrimaryKey("OrderID", "RoomID")]
 public partial class OrderDetail

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ClassLibrary; 
 
-namespace Hotel.Models
+namespace DBContextClassLibrary
 {
 
     public partial class HotelSysDBContext
@@ -12,8 +13,7 @@ namespace Hotel.Models
         public async Task<List<MemberWithTel>> GetMemberWithTelAsync(string memberId)
         {
             return await this.MemberWithTels
-                .FromSqlInterpolated($"EXEC getMemberWithTel {memberId}")
-                .AsNoTracking()
+                .FromSqlRaw("EXEC getMemberWithTel @p0", memberId)
                 .ToListAsync();
         }
     }
