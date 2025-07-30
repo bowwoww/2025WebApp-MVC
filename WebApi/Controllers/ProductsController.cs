@@ -23,7 +23,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("SQL")]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductFromSQL(string? cateId)
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductFromSQL(string? cateId,string? productName)
         {
             var sql = @"SELECT p.ProductID, p.ProductName, p.Price, p.Description, p.Picture, 
                             c.CateID, c.CateName
@@ -35,11 +35,34 @@ namespace WebApi.Controllers
 
             if (!string.IsNullOrEmpty(cateId))
             {
-                sql += $" and c.CateID = @cateId";
+                sql += " and c.CateID = @cateId";
                 parameters.Add(new SqlParameter("@cateId", cateId));
             }
 
+            if (!string.IsNullOrEmpty(productName))
+            {
+                sql += " and p.ProductName like @productName";
+                parameters.Add(new SqlParameter("@productName", $"%{productName}%"));
+            }
+
             var result = await _context.ProductDTO.FromSqlRaw<ProductDTO>(sql, parameters.ToArray())
+            .AsNoTracking() // Use AsNoTracking for read-only scenarios
+            .ToListAsync();
+            if (_context.Product == null)
+            {
+                return NotFound();
+            }
+            return result;
+        }
+
+        [HttpGet("SQL2")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductFromSQL2([FromQuery]string? cateId)
+        {
+            // Using a stored procedure to fetch products by category ID
+            List<SqlParameter> parameter = new List<SqlParameter>();
+            var sql = "exec GetProductsBySQL @cateId";
+            parameter.Add(new SqlParameter("@cateId",cateId));
+            var result = await _context.ProductDTO.FromSqlRaw<ProductDTO>(sql,parameter)
             .AsNoTracking() // Use AsNoTracking for read-only scenarios
             .ToListAsync();
             if (_context.Product == null)
