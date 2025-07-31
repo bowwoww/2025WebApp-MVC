@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
 using WebApi.DTOs;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebApi.Controllers
 {
@@ -158,7 +159,7 @@ namespace WebApi.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProducts(Product products)
+        public async Task<ActionResult<Product>> PostProducts([FromForm] Product products)
         {
             _context.Product.Add(products);
             try
@@ -178,6 +179,49 @@ namespace WebApi.Controllers
             }
 
             return CreatedAtAction("GetProducts", new { id = products.ProductID }, products);
+        }
+        [HttpPost]
+        [Route("PostProductsWithDTO")]
+        public async Task<ActionResult<ProductPostDTO>> PostProductsWithDTO([FromForm] ProductPostDTO productDto)
+        {
+            //驗證PK是否重複
+            if(_context.Product.AsNoTracking().Any(p => p.ProductID == productDto.ProductID))
+                return BadRequest("Product ID exist.");
+            //驗證檔案是否有上傳
+            if (productDto.Picture == null || productDto.Picture.Length == 0)
+            {
+                return BadRequest("Picture is required.");
+            }
+            else
+            {
+                var filename = await uploadFile(productDto.Picture, productDto.ProductID);
+                // 確保上傳檔案為圖片格式 , 否則回傳BadRequest
+                if (string.IsNullOrEmpty(filename))
+                { 
+                    return BadRequest("Invalid file format. Only images are allowed.");
+                }
+
+                // 建立新的 Product 實體並填充資料
+                var product = new Product
+                {
+                    ProductID = productDto.ProductID,
+                    ProductName = productDto.ProductName,
+                    Price = productDto.Price,
+                    Description = productDto.Description,
+                    Picture = filename,
+                    CateID = productDto.CateID
+                };
+                _context.Product.Add(product);
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    throw;
+                }
+                return CreatedAtAction("GetProducts", new { id = product.ProductID }, product);
+            }
         }
 
         // DELETE: api/Products/5
@@ -213,6 +257,35 @@ namespace WebApi.Controllers
                 CateID = product.CateID,
                 CateName = product.Cate.CateName, // Assuming CateName is a property in Category
             };
+        }
+
+        private async Task<string> uploadFile(IFormFile file,string productId)
+        {                 
+            // 確保上傳檔案為圖片格式 , 否則回傳BadRequest
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            // 檢查檔案副檔名是否在允許的範圍內(轉換為小寫以避免大小寫問題)
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return "";
+            }
+            // 如要避免因路徑不存在而導致錯誤，可以先檢查並創建目錄
+            var directoryPath = Path.Combine("wwwroot", "ProductPhotos");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // 使用 IFormFile 的 FileName 屬性來獲取檔案的副檔名
+            var filename = productId + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(directoryPath, filename);
+            // using 確保在使用完檔案流後釋放資源,使用 FileStream 來寫入檔案
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            return filename;
+            // 返回檔案名稱以便存儲到資料庫
         }
     }
 }

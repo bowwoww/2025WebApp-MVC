@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Models;
@@ -27,10 +28,12 @@ public partial class Product
     [StringLength(2)]
     public string CateID { get; set; } = null!;
 
+    [JsonIgnore]
     [ForeignKey("CateID")]
     [InverseProperty("Product")]
-    public virtual Category Cate { get; set; } = null!;
+    public virtual Category? Cate { get; set; } = null!;
 
+    [JsonIgnore]
     [InverseProperty("Product")]
-    public virtual ICollection<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+    public virtual ICollection<OrderDetail>? OrderDetail { get; set; } = new List<OrderDetail>();
 }
