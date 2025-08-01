@@ -52,14 +52,21 @@ namespace WebApi.Controllers
         // PUT: api/Categories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(string id, Category category)
+        public async Task<IActionResult> PutCategory(string id, CategoryPutDTO categoryDTO)
         {
-            if (id != category.CateID)
+            if (String.IsNullOrWhiteSpace(id) || categoryDTO == null)
             {
                 return BadRequest();
             }
+            var category = await _context.Category.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
-            _context.Entry(category).State = EntityState.Modified;
+            category.CateName = categoryDTO.CateName;
+            //提醒 Entity Framework Core 只會更新被標記為修改的屬性
+            _context.Entry(category).Property(c => c.CateName).IsModified = true;
 
             try
             {
@@ -67,14 +74,7 @@ namespace WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -83,9 +83,14 @@ namespace WebApi.Controllers
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory([FromBody]Category category)
+        public async Task<ActionResult<CategoryPostDTO>> PostCategory([FromBody]CategoryPostDTO category)
         {
-            _context.Category.Add(category);
+            Category cate = new Category
+            {
+                CateID = category.CateID,
+                CateName = category.CateName,
+            };
+            _context.Category.Add(cate);
             try
             {
                 await _context.SaveChangesAsync();

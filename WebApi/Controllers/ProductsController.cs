@@ -128,29 +128,48 @@ namespace WebApi.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProducts(string id, Product products)
+        public async Task<IActionResult> PutProducts(string id, ProductPutDTO productDTO)
         {
-            if (id != products.ProductID)
+            if(productDTO == null || String.IsNullOrWhiteSpace(id))
             {
-                return BadRequest();
+                return BadRequest("Invalid product data.");
             }
 
-            _context.Entry(products).State = EntityState.Modified;
-
+            var product = await _context.Product.FindAsync(id);
+            if (product == null) {
+                return NotFound();
+            }
+            // 更新產品資料
+            if(productDTO.Price >= 0)
+            {
+                product.Price = productDTO.Price;
+                _context.Entry(product).Property(p => p.Price).IsModified = true;
+            }
+            if (!String.IsNullOrEmpty(productDTO.Description))
+            {
+                product.Description = productDTO.Description;
+                _context.Entry(product).Property(p => p.Description).IsModified = true;
+            }
+            if (productDTO.Picture != null && productDTO.Picture.Length != 0)
+            {
+                var fileName = await uploadFile(productDTO.Picture, id);
+                if(fileName == "")
+                {
+                    return BadRequest("Invalid file format. Only images are allowed.");
+                }
+                product.Picture = fileName;
+                _context.Entry(product).Property(p => p.Picture).IsModified = true;
+            }
+            // _context.Entry(product).State = EntityState.Modified;
+            //和 _context.update(product); 效果一樣
+            //但如果只更新特定欄位可用_context.Entry(product).Property(p => p.xxx).IsModified = true;
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -279,6 +298,7 @@ namespace WebApi.Controllers
             // 使用 IFormFile 的 FileName 屬性來獲取檔案的副檔名
             var filename = productId + Path.GetExtension(file.FileName);
             var filePath = Path.Combine(directoryPath, filename);
+            deleteFile(productId).Wait(); // 確保在寫入新檔案前刪除舊檔案
             // using 確保在使用完檔案流後釋放資源,使用 FileStream 來寫入檔案
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -286,6 +306,28 @@ namespace WebApi.Controllers
             }
             return filename;
             // 返回檔案名稱以便存儲到資料庫
+        }
+
+        // 將 deleteFile 方法改為 private async Task，無回傳值
+        private async Task deleteFile(string productId)
+        {
+            var product = await _context.Product.FindAsync(productId);
+            if (product != null && !string.IsNullOrEmpty(product.Picture))
+            {
+                var filePath = Path.Combine("wwwroot", "ProductPhotos", product.Picture);
+                if (System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                }
+            }
+            // 無需回傳任何值
         }
     }
 }
