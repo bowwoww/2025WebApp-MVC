@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebApi.Models;
+using WebApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,8 @@ builder.Services.AddDbContext<WebApi.Models.GoodStoreContext>(options =>
 // Register the DbContext with a different name for partial class
 builder.Services.AddDbContext<WebApi.Models.GoodStoreContext2>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProductsConnection")));
+// 提供FileService 服務
+builder.Services.AddScoped<FileService>();
 
 var app = builder.Build();
 app.UseStaticFiles();

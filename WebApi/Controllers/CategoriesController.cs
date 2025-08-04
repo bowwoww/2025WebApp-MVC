@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
 using WebApi.DTOs;
+using WebApi.Service;
 
 namespace WebApi.Controllers
 {
@@ -15,10 +16,12 @@ namespace WebApi.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly GoodStoreContext _context;
+        private readonly FileService _fileService;
 
-        public CategoriesController(GoodStoreContext context)
+        public CategoriesController(GoodStoreContext context,FileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
 
         // GET: api/Categories
@@ -118,6 +121,23 @@ namespace WebApi.Controllers
             if (category == null)
             {
                 return NotFound();
+            }
+            var products = await _context.Product.Where(Product => Product.CateID == id).ToListAsync();
+            if (products.Count > 0)
+            {
+                foreach(var p in products)
+                {
+                    await _fileService.deleteFile(p.ProductID);
+                }
+                _context.Product.RemoveRange(products);
+            }
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
             }
 
             _context.Category.Remove(category);
