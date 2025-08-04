@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static WebApi.Validation.ProductValidator;
 
 namespace WebApi.DTOs
 {
