@@ -252,7 +252,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-
+            await deleteFile(id); // 刪除相關的圖片檔案
             _context.Product.Remove(products);
             await _context.SaveChangesAsync();
 
@@ -298,7 +298,7 @@ namespace WebApi.Controllers
             // 使用 IFormFile 的 FileName 屬性來獲取檔案的副檔名
             var filename = productId + Path.GetExtension(file.FileName);
             var filePath = Path.Combine(directoryPath, filename);
-            deleteFile(productId).Wait(); // 確保在寫入新檔案前刪除舊檔案
+            await deleteFile(productId); // 確保在寫入新檔案前刪除舊檔案
             // using 確保在使用完檔案流後釋放資源,使用 FileStream 來寫入檔案
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -321,8 +321,9 @@ namespace WebApi.Controllers
                     {
                         System.IO.File.Delete(filePath);
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine($"Error deleting file: {ex.Message}");
                         throw;
                     }
                 }
