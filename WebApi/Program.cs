@@ -24,6 +24,10 @@ builder.Services.AddDbContext<WebApi.Models.GoodStoreContext2>(options =>
 // 提供FileService 服務
 builder.Services.AddScoped<FileService>();
 
+// 提供CategoryService 服務
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ProductService>();
+
 var app = builder.Build();
 app.UseStaticFiles();
 

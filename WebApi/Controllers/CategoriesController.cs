@@ -17,11 +17,13 @@ namespace WebApi.Controllers
     {
         private readonly GoodStoreContext _context;
         private readonly FileService _fileService;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesController(GoodStoreContext context,FileService fileService)
+        public CategoriesController(GoodStoreContext context,FileService fileService,CategoryService categoryService)
         {
             _context = context;
             _fileService = fileService;
+            _categoryService = categoryService;
         }
 
         // GET: api/Categories
@@ -29,20 +31,17 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<CategoriesDTO>>> GetCategory()
         {
 
-            var categories = await _context.Category.Include(c => c.Product) // Eager loading Products
-                .AsNoTracking() // Use AsNoTracking for read-only scenarios
-                .OrderBy(c => c.CateID) // Order by CateID ascending
-                .Select(c => NewCategoryDTO(c)) // Project to DTO
-                .ToListAsync();
-
-            return categories;
+            return await _categoryService.GetCategory();
         }
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoriesDTO>> GetCategory(string id)
         {
-            var category = await _context.Category.Include(c => c.Product).Where(c => c.CateID == id).Select(c => NewCategoryDTO(c)).FirstOrDefaultAsync();
+            if(string.IsNullOrWhiteSpace(id))
+            { return BadRequest(); }
+
+            var category = await _categoryService.GetCategory(id);
 
             if (category == null)
             {
@@ -61,26 +60,14 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            var category = await _context.Category.FindAsync(id);
+            var category = await _categoryService.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
             }
+            await _categoryService.PutCategory(id, categoryDTO);
 
-            category.CateName = categoryDTO.CateName;
-            //提醒 Entity Framework Core 只會更新被標記為修改的屬性
-            _context.Entry(category).Property(c => c.CateName).IsModified = true;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Categories
@@ -88,27 +75,12 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryPostDTO>> PostCategory([FromBody]CategoryPostDTO category)
         {
-            Category cate = new Category
+            if(_categoryService.CategoryExists(category.CateID))
             {
-                CateID = category.CateID,
-                CateName = category.CateName,
-            };
-            _context.Category.Add(cate);
-            try
-            {
-                await _context.SaveChangesAsync();
+                return BadRequest("Category already exists.");
             }
-            catch (DbUpdateException)
-            {
-                if (CategoryExists(category.CateID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            Category cate = await _categoryService.PostCategory(category);
 
             return CreatedAtAction("GetCategory", new { id = category.CateID }, category);
         }
@@ -117,56 +89,22 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(string id)
         {
-            var category = await _context.Category.FindAsync(id);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BadRequest();
+            }
+            var category = await _categoryService.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
             }
-            var products = await _context.Product.Where(Product => Product.CateID == id).ToListAsync();
-            if (products.Count > 0)
-            {
-                foreach(var p in products)
-                {
-                    await _fileService.deleteFile(p.ProductID);
-                }
-                _context.Product.RemoveRange(products);
+            bool success = await _categoryService.DeleteCategory(id);
+            if (success) {
+                return Ok();
             }
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return BadRequest();
-            }
-
-            _context.Category.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return BadRequest();
         }
 
-        private bool CategoryExists(string id)
-        {
-            return _context.Category.Any(e => e.CateID == id);
-        }
 
-        private static CategoriesDTO NewCategoryDTO(Category c)
-        {
-            return new CategoriesDTO
-            {
-                CateID = c.CateID,
-                CateName = c.CateName,
-                Product = c.Product.Select(p => new Product
-                {
-                    ProductID = p.ProductID,
-                    ProductName = p.ProductName,
-                    Price = p.Price,
-                    Description = p.Description,
-                    Picture = p.Picture,
-                    CateID = p.CateID
-                }).ToList()
-            };
-        }
     }
 }

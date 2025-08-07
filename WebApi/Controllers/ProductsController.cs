@@ -10,6 +10,7 @@ using WebApi.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Service;
+using WebApi.QueryParameter;
 
 namespace WebApi.Controllers
 {
@@ -19,40 +20,20 @@ namespace WebApi.Controllers
     {
         private readonly GoodStoreContext2 _context;
         private readonly FileService _fileService;
+        private readonly ProductService _productService;
 
-        public ProductsController(GoodStoreContext2 context,FileService fileService)
+        public ProductsController(GoodStoreContext2 context,FileService fileService,ProductService productService)
         {
             _context = context;
             _fileService = fileService;
+            _productService = productService;
         }
 
         [HttpGet("SQL")]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductFromSQL(string? cateId,string? productName)
         {
-            var sql = @"SELECT p.ProductID, p.ProductName, p.Price, p.Description, p.Picture, 
-                            c.CateID, c.CateName
-                     FROM Product p
-                     JOIN Category c ON p.CateID = c.CateID 
-                     Where 1 = 1 ";
-
-            List<SqlParameter> parameters = new List<SqlParameter>();
-
-            if (!string.IsNullOrEmpty(cateId))
-            {
-                sql += " and c.CateID = @cateId";
-                parameters.Add(new SqlParameter("@cateId", cateId));
-            }
-
-            if (!string.IsNullOrEmpty(productName))
-            {
-                sql += " and p.ProductName like @productName";
-                parameters.Add(new SqlParameter("@productName", $"%{productName}%"));
-            }
-
-            var result = await _context.ProductDTO.FromSqlRaw<ProductDTO>(sql, parameters.ToArray())
-            .AsNoTracking() // Use AsNoTracking for read-only scenarios
-            .ToListAsync();
-            if (_context.Product == null)
+            var result = await _productService.GetProductFromSQL(cateId, productName);
+            if (result == null || !result.Any())
             {
                 return NotFound();
             }
@@ -63,13 +44,8 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductFromSQL2([FromQuery]string? cateId)
         {
             // Using a stored procedure to fetch products by category ID
-            List<SqlParameter> parameter = new List<SqlParameter>();
-            var sql = "exec GetProductsBySQL @cateId";
-            parameter.Add(new SqlParameter("@cateId",cateId));
-            var result = await _context.ProductDTO.FromSqlRaw<ProductDTO>(sql,parameter)
-            .AsNoTracking() // Use AsNoTracking for read-only scenarios
-            .ToListAsync();
-            if (_context.Product == null)
+            var result = await _productService.GetProductFromSQL(cateId);
+            if (result == null || !result.Any())
             {
                 return NotFound();
             }
@@ -78,54 +54,30 @@ namespace WebApi.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(string? cateId,string? cateName,string? productName,string? description,decimal? maxPrice, decimal? minPrice=0)
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(ProductParameter productParameter)
         {
-            //分類名稱是其他table ,想回傳時候直接塞入就另外建立一個DTO類別
-            var result = _context.Product
-                .Include(p => p.Cate) // Eager loading Category
-                .AsNoTracking() // Use AsNoTracking for read-only scenarios
-                .OrderByDescending(p => p.Price) // Order by Price descending
-                .AsQueryable(); // Start with IQueryable to allow further filtering
+            List<ProductDTO> products = await _productService.GetProducts(productParameter);
 
-            if (!string.IsNullOrEmpty(cateId))
+            if(products == null || products.Count == 0)
             {
-                result = result.Where(p => p.CateID == cateId);
+                return NotFound();
             }
-            if(!string.IsNullOrEmpty(cateName))
-            {
-                result = result.Where(p => p.Cate.CateName.Contains(cateName));
-            }
-            if(!string.IsNullOrEmpty(productName))
-            {
-                result = result.Where(p => p.ProductName.Contains(productName));
-            }
-            if(!string.IsNullOrEmpty(description))
-            {
-                result = result.Where(p => p.Description.Contains(description));
-            }
-            if (maxPrice.HasValue)
-            {
-                result = result.Where(p => p.Price <= maxPrice && p.Price >= minPrice);
-            }
-            return await result.Select(p => NewProductDTO(p)).ToListAsync();
+
+            return products; 
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> GetProducts(string id)
         {
-            var products = await _context.Product
-                .Include(p => p.Cate)
-                .Where(p => p.ProductID == id)
-                .Select(p => NewProductDTO(p))
-                .FirstOrDefaultAsync();
+            var product = await _productService.GetProducts(id);
 
-            if (products == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return products;
+            return product;
         }
 
         // PUT: api/Products/5
@@ -138,44 +90,18 @@ namespace WebApi.Controllers
                 return BadRequest("Invalid product data.");
             }
 
-            var product = await _context.Product.FindAsync(id);
+            var product = await _productService.GetProducts(id);
             if (product == null) {
                 return NotFound();
             }
-            // 更新產品資料
-            if(productDTO.Price >= 0)
+            
+            bool success = await _productService.PutProducts(id, productDTO);
+            if (success)
             {
-                product.Price = productDTO.Price;
-                _context.Entry(product).Property(p => p.Price).IsModified = true;
-            }
-            if (!String.IsNullOrEmpty(productDTO.Description))
-            {
-                product.Description = productDTO.Description;
-                _context.Entry(product).Property(p => p.Description).IsModified = true;
-            }
-            if (productDTO.Picture != null && productDTO.Picture.Length != 0)
-            {
-                var fileName = await _fileService.uploadFile(productDTO.Picture, id);
-                if(fileName == "")
-                {
-                    return BadRequest("Invalid file format. Only images are allowed.");
-                }
-                product.Picture = fileName;
-                _context.Entry(product).Property(p => p.Picture).IsModified = true;
-            }
-            // _context.Entry(product).State = EntityState.Modified;
-            //和 _context.update(product); 效果一樣
-            //但如果只更新特定欄位可用_context.Entry(product).Property(p => p.xxx).IsModified = true;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
+                return Ok(product);
             }
 
-            return NoContent();
+            return BadRequest();
         }
 
         // POST: api/Products
@@ -265,20 +191,6 @@ namespace WebApi.Controllers
         private bool ProductsExists(string id)
         {
             return _context.Product.Any(e => e.ProductID == id);
-        }
-
-        private static ProductDTO NewProductDTO(Product product)
-        {
-            return new ProductDTO
-            {
-                ProductID = product.ProductID,
-                ProductName = product.ProductName,
-                Price = product.Price,
-                Description = product.Description,
-                Picture = product.Picture,
-                CateID = product.CateID,
-                CateName = product.Cate.CateName, // Assuming CateName is a property in Category
-            };
         }
 
         
