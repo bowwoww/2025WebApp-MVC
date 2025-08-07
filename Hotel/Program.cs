@@ -1,13 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using DBContextClassLibrary;
+using Hotel.Filter;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// controller with view and filter
+builder.Services.AddControllersWithViews(option => { option.Filters.Add<LogFilter>(); });
 
 builder.Services.AddDbContext<DBContextClassLibrary.HotelSysDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("HotelSysConnection")));
+
+
 
 var app = builder.Build();
 
