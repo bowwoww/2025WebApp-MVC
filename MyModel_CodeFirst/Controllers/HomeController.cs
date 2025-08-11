@@ -54,12 +54,13 @@ namespace MyModel_CodeFirst.Controllers
         {
             string? uploadPhoto = null;
             string newId = Guid.NewGuid().ToString("N");
-            string fileType = formFile.ContentType;
+            string? fileType = null;
             if (formFile != null && formFile.Length > 0)
             {
-                if (fileType != "image/jpeg" && fileType != "image/png")
+                fileType = formFile.ContentType;
+                if (fileType != "image/jpeg" && fileType != "image/png" && fileType != "image/gif" && fileType != "image/jpg")
                 {
-                    ModelState.AddModelError("formFile", "只允許上傳 JPEG 或 PNG 圖片。");
+                    ModelState.AddModelError("formFile", "只允許上傳圖片格式。");
                     return Json("ERROR");
                 }
                 var fileName = newId + Path.GetExtension(formFile.FileName);
@@ -120,11 +121,14 @@ namespace MyModel_CodeFirst.Controllers
             var message = await db.Messages.FindAsync(id);
             if (message != null)
             {
-                // 刪除上傳的照片檔案
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", message.UploadPhoto);
-                if (System.IO.File.Exists(filePath))
+                if(message.UploadPhoto != null)
                 {
-                    System.IO.File.Delete(filePath);
+                    // 刪除上傳的照片檔案
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadPhotos", message.UploadPhoto);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
                 }
 
 

@@ -15,10 +15,10 @@ namespace MyModel_CodeFirst.Models
         [DisplayName("發文者")]
         [Required(ErrorMessage = "發文者為必填欄位")]
         [StringLength(50, ErrorMessage = "發文者名稱不能超過50個字元")]
-        public string Sender { get; set; } = string.Empty;
+        public string Sender { get; set; } = null!;
         [DisplayName("主題")]
         [StringLength(100, ErrorMessage = "主題不能超過100個字元")]
-        public string Subject { get; set; } = string.Empty;
+        public string Subject { get; set; } = null!;
         [DisplayName("發文日期")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm:ss}", ApplyFormatInEditMode = true)]
@@ -27,11 +27,14 @@ namespace MyModel_CodeFirst.Models
         [DisplayName("上傳照片")]
         [StringLength(50)]
         // 上傳照片檔名為編號 + jpg
-        public string UploadPhoto { get; set; } = string.Empty;
+        public string? UploadPhoto { get; set; }
+        [DisplayName("照片類型")]
+        [StringLength(20)]
+        public string? PhotoType { get; set; }
         [DisplayName("內容")]
         [Required(ErrorMessage = "內容為必填欄位")]
         [DataType(DataType.MultilineText)]
-        public string Body { get; set; } = string.Empty;
+        public string Body { get; set; } = null!;
         public virtual List<Response>? Responses { get; set; }
     }
 
@@ -44,7 +47,7 @@ namespace MyModel_CodeFirst.Models
         [DisplayName("回覆者")]
         [Required(ErrorMessage = "回覆者為必填欄位")]
         [StringLength(50, ErrorMessage = "回覆者名稱不能超過50個字元")]
-        public string Sender { get; set; } = string.Empty;
+        public string Sender { get; set; } = null!;
         [DisplayName("回覆日期")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm:ss}", ApplyFormatInEditMode = true)]
@@ -53,7 +56,7 @@ namespace MyModel_CodeFirst.Models
         [DisplayName("回覆內容")]
         [Required(ErrorMessage = "回覆內容為必填欄位")]
         [DataType(DataType.MultilineText)]
-        public string Body { get; set; } = string.Empty;
+        public string Body { get; set; } = null!;
         [ForeignKey("Message")]
         [Required]
         [HiddenInput]

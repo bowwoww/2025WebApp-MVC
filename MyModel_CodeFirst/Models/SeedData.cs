@@ -12,6 +12,21 @@ namespace MyModel_CodeFirst.Models
             {
                 // 確保資料庫已建立
                 context.Database.EnsureCreated();
+
+                if (!context.LoginUsers.Any())
+                {
+                    context.LoginUsers.Add(
+                        new LoginUser
+                        {
+                            UserName = "admin",
+                            Password = "admin123", // 密碼應該加密存儲，這裡僅為示範
+                            ReturnUrl = "/",
+                            Role = 1 // 假設 1 為管理員角色
+                        });
+                    context.SaveChanges();
+
+
+                }
                 // 檢查是否有資料
                 if (context.Messages.Any())
                 {
@@ -34,7 +49,7 @@ namespace MyModel_CodeFirst.Models
                         SentDate = DateTime.Now,
                         // 假設上傳的照片檔名為 Id + .jpg
                         UploadPhoto = ids[0] + ".jpg",
-                        PhotoType = "jpg"
+                        PhotoType = "image/jpg"
                     },
                     new Message
                     {
@@ -44,7 +59,7 @@ namespace MyModel_CodeFirst.Models
                         Body = "Just saying hi!",
                         SentDate = DateTime.Now.AddMinutes(-10),
                         UploadPhoto = ids[1] + ".jpg",
-                        PhotoType = "jpg"
+                        PhotoType = "image/jpg"
                     }
                 );
 
