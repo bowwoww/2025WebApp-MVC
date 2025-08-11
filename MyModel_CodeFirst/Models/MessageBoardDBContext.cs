@@ -38,6 +38,8 @@ namespace MyModel_CodeFirst.Models
                 //    .HasDefaultValueSql("getdate()");  從sql server 取得當前時間  已由 C# 端程式碼處理
                 entity.Property(e => e.UploadPhoto)
                     .HasMaxLength(50);
+                entity.Property(e => e.PhotoType)
+                    .HasMaxLength(20);
                 entity.Property(e => e.Body)
                     .IsRequired();
             });

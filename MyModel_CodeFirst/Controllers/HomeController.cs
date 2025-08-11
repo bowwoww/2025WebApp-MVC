@@ -20,21 +20,6 @@ namespace MyModel_CodeFirst.Controllers
 
         public IActionResult Index()
         {
-            //取四筆最新留言
-            //var latestMessages = await db.Messages
-            //    .OrderByDescending(m => m.SentDate)
-            //    .Take(4)
-            //    .ToListAsync();
-
-            //foreach (var m in latestMessages)
-            //{
-            //    m.Responses = await db.Responses
-            //        .AsNoTracking()
-            //        .Where(r => r.Id == m.Id)
-            //        .OrderByDescending(r => r.SentDate)
-            //        .ToListAsync();
-            //}
-
             return View();
         }
         public async Task<IActionResult> GetMessage(int skip = 0, int take = 4)
@@ -69,9 +54,10 @@ namespace MyModel_CodeFirst.Controllers
         {
             string? uploadPhoto = null;
             string newId = Guid.NewGuid().ToString("N");
+            string fileType = formFile.ContentType;
             if (formFile != null && formFile.Length > 0)
             {
-                if (formFile.ContentType != "image/jpeg" && formFile.ContentType != "image/png")
+                if (fileType != "image/jpeg" && fileType != "image/png")
                 {
                     ModelState.AddModelError("formFile", "只允許上傳 JPEG 或 PNG 圖片。");
                     return Json("ERROR");
@@ -98,6 +84,7 @@ namespace MyModel_CodeFirst.Controllers
                 if (uploadPhoto != null)
                 {
                     nm.UploadPhoto = uploadPhoto;
+                    nm.PhotoType = fileType;
                 }
                 db.Messages.Add(nm);
                 await db.SaveChangesAsync();

@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace MyModel_CodeFirst.Models
 {
@@ -34,7 +33,8 @@ namespace MyModel_CodeFirst.Models
                         Body = "This is a test message.",
                         SentDate = DateTime.Now,
                         // 假設上傳的照片檔名為 Id + .jpg
-                        UploadPhoto = ids[0] + ".jpg"
+                        UploadPhoto = ids[0] + ".jpg",
+                        PhotoType = "jpg"
                     },
                     new Message
                     {
@@ -43,7 +43,8 @@ namespace MyModel_CodeFirst.Models
                         Subject = "Greetings",
                         Body = "Just saying hi!",
                         SentDate = DateTime.Now.AddMinutes(-10),
-                        UploadPhoto = ids[1] + ".jpg"
+                        UploadPhoto = ids[1] + ".jpg",
+                        PhotoType = "jpg"
                     }
                 );
 

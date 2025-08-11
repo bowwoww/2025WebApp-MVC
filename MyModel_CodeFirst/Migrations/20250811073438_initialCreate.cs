@@ -6,11 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyModel_CodeFirst.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "LoginUsers",
+                columns: table => new
+                {
+                    UserName = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ReturnUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginUsers", x => x.UserName);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
@@ -19,7 +33,8 @@ namespace MyModel_CodeFirst.Migrations
                     Sender = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Subject = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SentDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UploadPhoto = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UploadPhoto = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhotoType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Body = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -58,6 +73,9 @@ namespace MyModel_CodeFirst.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "LoginUsers");
+
             migrationBuilder.DropTable(
                 name: "Responses");
 

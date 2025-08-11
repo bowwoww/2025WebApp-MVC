@@ -12,18 +12,41 @@ using MyModel_CodeFirst.Models;
 namespace MyModel_CodeFirst.Migrations
 {
     [DbContext(typeof(MessageBoardDBContext))]
-    [Migration("20250703045304_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250811073438_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("MyModel_CodeFirst.Models.LoginUser", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ReturnUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("LoginUsers");
+                });
 
             modelBuilder.Entity("MyModel_CodeFirst.Models.Message", b =>
                 {
@@ -35,6 +58,10 @@ namespace MyModel_CodeFirst.Migrations
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoType")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Sender")
                         .IsRequired()
@@ -50,7 +77,6 @@ namespace MyModel_CodeFirst.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UploadPhoto")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 

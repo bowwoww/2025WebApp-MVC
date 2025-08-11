@@ -17,7 +17,7 @@ namespace MyModel_CodeFirst.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -56,6 +56,10 @@ namespace MyModel_CodeFirst.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhotoType")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Sender")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -70,7 +74,6 @@ namespace MyModel_CodeFirst.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UploadPhoto")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
