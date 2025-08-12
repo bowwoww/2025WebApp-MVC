@@ -19,13 +19,11 @@ namespace WebApi.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly GoodStoreContext2 _context;
-        private readonly FileService _fileService;
         private readonly ProductService _productService;
 
-        public ProductsController(GoodStoreContext2 context,FileService fileService,ProductService productService)
+        public ProductsController(GoodStoreContext2 context,ProductService productService)
         {
             _context = context;
-            _fileService = fileService;
             _productService = productService;
         }
 
@@ -109,22 +107,12 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProducts([FromForm] Product products)
         {
-            _context.Product.Add(products);
-            try
+            var success = await _productService.PostProducts(products);
+            if (!success)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest();
             }
-            catch (DbUpdateException)
-            {
-                if (ProductsExists(products.ProductID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
 
             return CreatedAtAction("GetProducts", new { id = products.ProductID }, products);
         }
@@ -133,59 +121,33 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ProductPostDTO>> PostProductsWithDTO([FromForm] ProductPostDTO productDto)
         {
             //驗證PK是否重複
-            if(_context.Product.AsNoTracking().Any(p => p.ProductID == productDto.ProductID))
+            var reslut = await _productService.PostProductWithDTO(productDto);
+            if(reslut == 0)
                 return BadRequest("Product ID exist.");
             //驗證檔案是否有上傳
-            if (productDto.Picture == null || productDto.Picture.Length == 0)
+            if (reslut == 3)
             {
-                return BadRequest("Picture is required.");
+                return BadRequest("Picture file is invalid, please make sure file type is correct");
             }
-            else
+            if (reslut == 2)
             {
-                var filename = await _fileService.uploadFile(productDto.Picture, productDto.ProductID);
-                // 確保上傳檔案為圖片格式 , 否則回傳BadRequest
-                if (string.IsNullOrEmpty(filename))
-                { 
-                    return BadRequest("Invalid file format. Only images are allowed.");
-                }
+                return BadRequest("Expection detected");
+            }
+            return Ok();
 
-                // 建立新的 Product 實體並填充資料
-                var product = new Product
-                {
-                    ProductID = productDto.ProductID,
-                    ProductName = productDto.ProductName,
-                    Price = productDto.Price,
-                    Description = productDto.Description,
-                    Picture = filename,
-                    CateID = productDto.CateID
-                };
-                _context.Product.Add(product);
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateException)
-                {
-                    throw;
-                }
-                return CreatedAtAction("GetProducts", new { id = product.ProductID }, product);
-            }
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducts(string id)
         {
-            var products = await _context.Product.FindAsync(id);
-            if (products == null)
+            var success = await _productService.DeleteProducts(id);
+            if( !success)
             {
                 return NotFound();
             }
-            await _fileService.deleteFile(id); // 刪除相關的圖片檔案
-            _context.Product.Remove(products);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool ProductsExists(string id)

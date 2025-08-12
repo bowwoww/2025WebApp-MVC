@@ -140,6 +140,81 @@ namespace WebApi.Service
 
         }
 
+        public async Task<bool> PostProducts(Product product)
+        {
+
+            _context.Product.Add(product);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<int> PostProductWithDTO(ProductPostDTO productDTO)
+        {
+            // Check if ProductID already exists
+            if( await _context.Product.AnyAsync(p => p.ProductID == productDTO.ProductID))
+            {
+                return 0; // Return 0 to indicate failure due to duplicate ProductID
+            }
+            // Validate the uploaded file
+            if (productDTO.Picture == null || productDTO.Picture.Length == 0)
+            {
+                return 3; // Return 3 to indicate failure due to missing picture
+            }
+            // Upload the file and get the filename
+            var filename = await _fileService.uploadFile(productDTO.Picture, productDTO.ProductID);
+            if (string.IsNullOrEmpty(filename))
+            {
+                return 3; // Return 3 to indicate failure due to invalid file type
+            }
+            var product = new Product
+            {
+                ProductID = productDTO.ProductID,
+                ProductName = productDTO.ProductName,
+                Price = productDTO.Price,
+                Description = productDTO.Description,
+                Picture = filename,
+                CateID = productDTO.CateID,
+            };
+            _context.Product.Add(product);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return 2; // Return 2 to indicate failure
+            }
+            return 1; // Return 1 to indicate success
+        }
+
+        public async Task<bool> DeleteProducts(string id)
+        {
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
+            {
+                return false; // Product not found
+            }
+            // Delete the associated file
+            await _fileService.deleteFile(id);
+            _context.Product.Remove(product);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false; // Error during deletion
+            }
+            return true; // Deletion successful
+        }
+
         private static ProductDTO NewProductDTO(Product product)
         {
             return new ProductDTO
