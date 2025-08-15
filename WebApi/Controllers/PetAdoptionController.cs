@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebApi.Models;
+using WebApi.Service;
+using static System.Net.WebRequestMethods;
 
 namespace WebApi.Controllers
 {
@@ -8,44 +11,50 @@ namespace WebApi.Controllers
     [ApiController]
     public class PetAdoptionController : ControllerBase
     {
-        private static string linkUrl = "https://data.moa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL&$top=200";
+        private readonly ThirdApiService _thirdApiService;
+
+        public PetAdoptionController(ThirdApiService thirdApiService)
+        {
+            _thirdApiService = thirdApiService;
+        }
+
+
+        //[HttpGet]
+        //public async Task<IEnumerable<Animal>> GetAnimals(string? urlParameterName, string? urlParameterValue,int? top = 200)
+        //{
+        //    string url = $"https://data.moa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL&{urlParameterName}={urlParameterValue}&$top={top}";
+            
+
+        //    return await _thirdApiService.Get<Animal>(url);
+
+
+        //}
 
         [HttpGet("GetAnimals")]
-        public async Task<IEnumerable<Animal>> GetAnimals()
+        public async Task<IEnumerable<Animal>> GetAnimals(string? urlParameters, int? top = 200)
         {
-            // data scource 3rd API https://data.moa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL
-            //using HttpClient to fetch data from the 3rd party API is a common practice.
+            // urlParameters 直接是整個string 讓前端可以直接串接多個條件(須注意增加&) 
+            string url = $"https://data.moa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL{urlParameters}&$top={top}";
 
-            using (var httpClient = new HttpClient())
-            {
-                try
-                {
-                    // Set the base address for the HttpClient
-                    httpClient.BaseAddress = new Uri(linkUrl);
-                    // Send a GET request to the API
-                    var response = await httpClient.GetAsync("");
-                    // Ensure the request was successful
-                    response.EnsureSuccessStatusCode();
-                    // Read the response content as a string
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Deserialize the JSON response into a list of Animal objects
-                    var animals = System.Text.Json.JsonSerializer.Deserialize<List<Animal>>(jsonResponse);
-                    return animals ?? new List<Animal>();
-                }
-                catch (HttpRequestException e)
-                {
-                    // Handle any errors that occurred during the request
-                    Console.WriteLine($"Request error: {e.Message}");
-                    return new List<Animal>();
-                }
-                catch (Exception ex)
-                {
-                    // Handle any other exceptions that may occur
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    return new List<Animal>();
-                }
-            }
+
+            return await _thirdApiService.Get<Animal>(url);
+
 
         }
+
+        [HttpGet("GetAnimals/{pageSize}/{page}")]
+        public async Task<IEnumerable<Animal>> GetAnimals(string? urlParameters, int pageSize, int page, int? top = 200)
+        {
+            int skip = (page - 1) * pageSize;
+
+            // urlParameters 直接是整個string 讓前端可以直接串接多個條件(須注意增加&) 
+            string url = $"https://data.moa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL{urlParameters}&$top={pageSize}&$skip={skip}";
+
+
+            return await _thirdApiService.Get<Animal>(url);
+
+
+        }
+
     }
 }

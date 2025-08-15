@@ -1,8 +1,11 @@
-﻿namespace WebApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApi.Models
 {
     //3.	點選上方選單：編輯 > 進階 > 貼上特殊 > 貼上為類別
     public class Animal
     {
+        [Key]
         public int animal_id { get; set; }
         public string animal_subid { get; set; }
         public int animal_area_pkid { get; set; }

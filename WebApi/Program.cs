@@ -12,6 +12,7 @@ builder.Services.AddControllers()
         //阻止json有無窮參照
         option.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+builder.Services.AddControllersWithViews();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,6 +29,8 @@ builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 
+builder.Services.AddScoped<ThirdApiService>();
+
 var app = builder.Build();
 app.UseStaticFiles();
 
@@ -40,6 +43,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
+
+app.UseRouting();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
+
 app.MapControllers();
 
 app.Run();
+

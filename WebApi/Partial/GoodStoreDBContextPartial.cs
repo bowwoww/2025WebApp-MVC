@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.DTOs;
+using WebApi.Models;
 
 namespace WebApi.Models;
 
@@ -17,4 +18,6 @@ public class GoodStoreContext2 : GoodStoreContext
             entity.HasNoKey());
         base.OnModelCreating(modelBuilder);
     }
+
+public DbSet<WebApi.Models.Animal> Animal { get; set; } = default!;
 }
